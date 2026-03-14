@@ -43,12 +43,19 @@ with app.app_context():
             # Auto-promote your account to admin
             conn.execute(text('UPDATE "user" SET is_admin = true WHERE email = :email'), {"email": "deepubijoy@gmail.com"})
             
-            # Auto-populate banners if empty
+            # Auto-populate banners if empty or pointing to old Unsplash URLs
             banner_count = conn.execute(text('SELECT COUNT(*) FROM banner')).scalar()
+            
+            # Check if we need to refresh (e.g. if pointing to old unsplash URLs)
+            first_banner = conn.execute(text('SELECT image_path FROM banner LIMIT 1')).fetchone()
+            if first_banner and 'unsplash' in (first_banner[0] or ''):
+                conn.execute(text('DELETE FROM banner'))
+                banner_count = 0
+
             if banner_count == 0:
                 banners = [
                     {
-                        "image_path": "https://images.unsplash.com/photo-1516826957135-700ede19c6ce?q=80&w=2000&auto=format&fit=crop",
+                        "image_path": "/static/img/banners/professional_banner_1.png",
                         "title": "Urban Essentials",
                         "subtitle": "Define your street signature.",
                         "button_text": "Shop Now",
@@ -56,7 +63,7 @@ with app.app_context():
                         "display_order": 1
                     },
                     {
-                        "image_path": "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=2000&auto=format&fit=crop",
+                        "image_path": "/static/img/banners/professional_banner_2.png",
                         "title": "Premium Quality",
                         "subtitle": "Streetwear redefined for comfort.",
                         "button_text": "View Collection",
@@ -64,7 +71,7 @@ with app.app_context():
                         "display_order": 2
                     },
                     {
-                        "image_path": "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2000&auto=format&fit=crop",
+                        "image_path": "/static/img/banners/professional_banner_3.png",
                         "title": "New Arrivals",
                         "subtitle": "The latest drops of the season.",
                         "button_text": "Explore",
