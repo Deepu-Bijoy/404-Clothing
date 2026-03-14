@@ -52,8 +52,15 @@ def index():
         }
         
         try:
+            # Check for keys first
+            key_id = current_app.config.get('RAZORPAY_KEY_ID')
+            key_secret = current_app.config.get('RAZORPAY_KEY_SECRET')
+            
+            if not key_id or not key_secret:
+                raise ValueError("Razorpay API Keys are missing in server configuration.")
+
             # Create Razorpay Order
-            client = razorpay.Client(auth=(current_app.config['RAZORPAY_KEY_ID'], current_app.config['RAZORPAY_KEY_SECRET']))
+            client = razorpay.Client(auth=(key_id, key_secret))
             
             razorpay_order_data = {
                 'amount': int(total_price * 100), # Amount in paise
@@ -66,8 +73,12 @@ def index():
             payment_ready = True
             current_app.logger.info(f"Razorpay Order Created: {razorpay_order_id} for user {current_user.id}")
         except Exception as e:
-            current_app.logger.error(f"Razorpay Order Creation Failed: {str(e)}")
-            flash(f"Payment Gateway Error: {str(e)}. Check API Keys.", 'danger')
+            error_msg = str(e)
+            current_app.logger.error(f"Razorpay Error: {error_msg}")
+            if "Authentication failed" in error_msg or "API Keys" in error_msg:
+                flash(f"Payment Gateway Error: Authentication failed. Please verify RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET on Render dashboard.", 'danger')
+            else:
+                flash(f"Payment Gateway Error: {error_msg}", 'danger')
             payment_ready = False
             razorpay_order_id = None
     
