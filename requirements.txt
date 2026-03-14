@@ -8,13 +8,14 @@ Werkzeug==3.0.1
 supabase==2.4.0
 python-dotenv==1.0.1
 gunicorn==21.2.0
-psycopg2-binary>=2.9.9
+psycopg2-binary==2.9.9
 WTForms==3.1.2
-SQLAlchemy>=2.0.25
+SQLAlchemy==2.0.25
 email-validator==2.1.1
 bcrypt==4.1.2
 requests==2.31.0
-typing-extensions>=4.10.0
+typing-extensions==4.10.0
 razorpay==1.4.1
-setuptools>=69.0.3
-# Cache breaker: 2026-03-15-0205
+setuptools==69.0.3
+importlib-metadata==7.0.1
+# STRICT CACHE BREAKER: 2026-03-15-0209
