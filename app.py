@@ -42,8 +42,45 @@ with app.app_context():
             conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
             # Auto-promote your account to admin
             conn.execute(text('UPDATE "user" SET is_admin = true WHERE email = :email'), {"email": "deepubijoy@gmail.com"})
+            
+            # Auto-populate banners if empty
+            banner_count = conn.execute(text('SELECT COUNT(*) FROM banner')).scalar()
+            if banner_count == 0:
+                banners = [
+                    {
+                        "image_path": "https://images.unsplash.com/photo-1516826957135-700ede19c6ce?q=80&w=2000&auto=format&fit=crop",
+                        "title": "Urban Essentials",
+                        "subtitle": "Define your street signature.",
+                        "button_text": "Shop Now",
+                        "button_link": "/#collection",
+                        "display_order": 1
+                    },
+                    {
+                        "image_path": "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=2000&auto=format&fit=crop",
+                        "title": "Premium Quality",
+                        "subtitle": "Streetwear redefined for comfort.",
+                        "button_text": "View Collection",
+                        "button_link": "/#collection",
+                        "display_order": 2
+                    },
+                    {
+                        "image_path": "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2000&auto=format&fit=crop",
+                        "title": "New Arrivals",
+                        "subtitle": "The latest drops of the season.",
+                        "button_text": "Explore",
+                        "button_link": "/#collection",
+                        "display_order": 3
+                    }
+                ]
+                for b in banners:
+                    conn.execute(text("""
+                        INSERT INTO banner (image_path, title, subtitle, button_text, button_link, display_order, is_active, created_at)
+                        VALUES (:image_path, :title, :subtitle, :button_text, :button_link, :display_order, true, NOW())
+                    """), b)
+            
             conn.commit()
-    except Exception:
+    except Exception as e:
+        print(f"Migration error: {e}")
         pass  # Already updated or table doesn't exist yet
 
 @login_manager.user_loader
