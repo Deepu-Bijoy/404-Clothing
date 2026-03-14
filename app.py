@@ -35,7 +35,14 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 # Create Database Tables if not exist
 with app.app_context():
     db.create_all()
-    # Create default admin if not exists (optional, handled in scripts usually)
+    # Migrate password_hash column from VARCHAR(128) to TEXT if needed
+    try:
+        from sqlalchemy import text
+        with db.engine.connect() as conn:
+            conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
+            conn.commit()
+    except Exception:
+        pass  # Already TEXT or table doesn't exist yet — safe to ignore
 
 @login_manager.user_loader
 def load_user(user_id):
