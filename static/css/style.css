@@ -138,7 +138,7 @@ a {
     background: #f8f9fb;
     width: 100%;
     position: relative;
-    height: 600px; /* Consistent height for desktop */
+    height: 450px; /* Shorter, wider height for a sleeker look */
 }
 
 .hero-carousel .carousel-inner {
