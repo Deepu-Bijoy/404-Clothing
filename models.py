@@ -25,16 +25,24 @@ class User(UserMixin, db.Model):
 
     def get_reset_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({'user_id': self.id})
+        # Include current password_hash to invalidate token once changed
+        return s.dumps({'user_id': self.id, 'hash': self.password_hash})
 
     @staticmethod
     def verify_reset_token(token, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            user_id = s.loads(token, max_age=expires_sec)['user_id']
+            data = s.loads(token, max_age=expires_sec)
+            user_id = data.get('user_id')
+            token_hash = data.get('hash')
         except Exception:
             return None
-        return User.query.get(user_id)
+        
+        user = User.query.get(user_id)
+        if not user or user.password_hash != token_hash:
+            return None
+            
+        return user
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)

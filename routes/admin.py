@@ -73,17 +73,6 @@ def dashboard():
         ).scalar() or 0
         top_seller_rating = round(float(top_seller_rating), 1)
 
-    # Storage Check
-    from supabase_utils import get_supabase_client
-    supabase_configured = False
-    try:
-        sb_client = get_supabase_client()
-        if sb_client:
-            # Ping bucket (optional but good)
-            supabase_configured = True
-    except Exception:
-        pass
-
     return render_template('admin/dashboard.html', 
                            products_count=products_count, 
                            orders_count=orders_count, 
@@ -94,8 +83,7 @@ def dashboard():
                            top_seller=top_seller,
                            top_sales_count=max_sales,
                            top_seller_revenue=top_seller_revenue,
-                           top_seller_rating=top_seller_rating,
-                           storage_status=supabase_configured)
+                           top_seller_rating=top_seller_rating)
 
 @admin_bp.route('/products')
 @login_required
@@ -124,22 +112,14 @@ def add_product():
             files = request.files.getlist('image_files')
             for file in files:
                 if file and file.filename:
-                    # 1. Try Supabase Upload first
+                    # Enforce Supabase Upload
                     supabase_url = upload_to_supabase(file, folder='products')
                     
                     if supabase_url:
                         image_urls.append(supabase_url)
                     else:
-                        # 2. Fallback to local if Supabase fails/not configured
-                        filename = secure_filename(file.filename)
-                        import uuid
-                        filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                        upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'products')
-                        if not os.path.exists(upload_dir):
-                            os.makedirs(upload_dir)
-                        
-                        file.save(os.path.join(upload_dir, filename))
-                        image_urls.append(url_for('static', filename=f'uploads/products/{filename}'))
+                        flash(f"Failed to upload {file.filename} to Supabase. Product creation aborted.", 'danger')
+                        return redirect(url_for('admin.products'))
         
         # First URL is the main image
         main_image_url = image_urls[0] if image_urls else None
@@ -172,19 +152,13 @@ def add_category():
         if 'category_image' in request.files:
             file = request.files['category_image']
             if file and file.filename:
-                # 1. Try Supabase
+                # Enforce Supabase
                 supabase_url = upload_to_supabase(file, folder='categories')
                 if supabase_url:
                     image_url = supabase_url
                 else:
-                    # 2. Fallback
-                    filename = secure_filename(file.filename)
-                    import uuid
-                    filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                    upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'categories')
-                    os.makedirs(upload_dir, exist_ok=True)
-                    file.save(os.path.join(upload_dir, filename))
-                    image_url = url_for('static', filename=f'uploads/categories/{filename}')
+                    flash("Failed to upload category image to Supabase.", 'danger')
+                    return redirect(url_for('admin.products'))
 
         category = Category(name=name, slug=slug, image_url=image_url)
         db.session.add(category)
@@ -215,19 +189,13 @@ def edit_category(category_id):
                     if os.path.exists(old_path):
                         os.remove(old_path)
             
-            # 1. Try Supabase
+            # Enforce Supabase
             supabase_url = upload_to_supabase(file, folder='categories')
             if supabase_url:
                 category.image_url = supabase_url
             else:
-                # 2. Fallback
-                filename = secure_filename(file.filename)
-                import uuid
-                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'categories')
-                os.makedirs(upload_dir, exist_ok=True)
-                file.save(os.path.join(upload_dir, filename))
-                category.image_url = url_for('static', filename=f'uploads/categories/{filename}')
+                flash("Failed to upload new category image to Supabase.", 'danger')
+                return redirect(url_for('admin.products'))
     
     db.session.commit()
     flash('Category updated', 'success')
@@ -398,19 +366,13 @@ def add_banner():
     if 'banner_image' in request.files:
         file = request.files['banner_image']
         if file and file.filename:
-            # 1. Try Supabase
+            # Enforce Supabase
             supabase_url = upload_to_supabase(file, folder='banners')
             if supabase_url:
                 image_path = supabase_url
             else:
-                # 2. Fallback
-                filename = secure_filename(file.filename)
-                import uuid
-                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'banners')
-                os.makedirs(upload_dir, exist_ok=True)
-                file.save(os.path.join(upload_dir, filename))
-                image_path = url_for('static', filename=f'uploads/banners/{filename}')
+                flash("Failed to upload banner to Supabase.", 'danger')
+                return redirect(url_for('admin.banners'))
     
     if image_path:
         banner = Banner(
@@ -455,19 +417,13 @@ def edit_banner(banner_id):
                         try: os.remove(old_path)
                         except Exception: pass
             
-            # 1. Try Supabase
+            # Enforce Supabase
             supabase_url = upload_to_supabase(file, folder='banners')
             if supabase_url:
                 banner.image_path = supabase_url
             else:
-                # 2. Fallback
-                filename = secure_filename(file.filename)
-                import uuid
-                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'banners')
-                os.makedirs(upload_dir, exist_ok=True)
-                file.save(os.path.join(upload_dir, filename))
-                banner.image_path = url_for('static', filename=f'uploads/banners/{filename}')
+                flash("Failed to upload new banner image to Supabase.", 'danger')
+                return redirect(url_for('admin.banners'))
             
     db.session.commit()
     flash('Banner updated.', 'success')
@@ -573,19 +529,3 @@ def delete_product_image(image_id):
     db.session.commit()
     flash('Image removed from gallery.', 'success')
     return redirect(url_for('admin.products'))
-
-@admin_bp.route('/user/toggle-status/<int:user_id>', methods=['POST'])
-@login_required
-@admin_required
-def toggle_user_status(user_id):
-    user = db.get_or_404(User, user_id)
-    if user.id == current_user.id:
-        flash('You cannot suspend yourself!', 'danger')
-        return redirect(url_for('admin.users'))
-    
-    user.is_active = not user.is_active
-    db.session.commit()
-    
-    action = 'activated' if user.is_active else 'suspended'
-    flash(f'User {user.name} has been {action}.', 'success')
-    return redirect(url_for('admin.users'))

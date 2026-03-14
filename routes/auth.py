@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm
 from models import User
@@ -52,15 +52,22 @@ def logout():
 
 def send_reset_email(user):
     token = user.get_reset_token()
+    reset_url = url_for('auth.reset_token', token=token, _external=True)
     msg = Message('Password Reset Request',
-                  sender='noreply@404clothing.com',
+                  sender=current_app.config.get('MAIL_DEFAULT_SENDER', 'noreply@404clothing.com'),
                   recipients=[user.email])
     msg.body = f'''To reset your password, visit the following link:
-{url_for('auth.reset_token', token=token, _external=True)}
+{reset_url}
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        return True
+    except Exception as e:
+        print(f"FAILED TO SEND EMAIL: {e}")
+        print(f"RESET LINK (FOR DEBUGGING): {reset_url}")
+        return False
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
@@ -69,9 +76,20 @@ def reset_request():
     form = RequestResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        send_reset_email(user)
-        flash('An email has been sent with instructions to reset your password.', 'info')
-        return redirect(url_for('auth.login'))
+        if user:
+            token = user.get_reset_token()
+            reset_url = url_for('auth.reset_token', token=token, _external=True)
+            if send_reset_email(user):
+                flash('Password reset link sent to your email', 'info')
+                return redirect(url_for('auth.login'))
+            else:
+                # Still show a message but don't show the link on screen
+                flash('Password reset link sent to your email', 'info')
+                return redirect(url_for('auth.login'))
+        else:
+            # Standard security practice: don't reveal if user exists
+            flash('Password reset link sent to your email', 'info')
+            return redirect(url_for('auth.login'))
     return render_template('auth/reset_request.html', title='Reset Password', form=form)
 
 @auth_bp.route("/reset_password/<token>", methods=['GET', 'POST'])
@@ -80,12 +98,12 @@ def reset_token(token):
         return redirect(url_for('shop.index'))
     user = User.verify_reset_token(token)
     if user is None:
-        flash('That is an invalid or expired token', 'warning')
+        flash('Invalid or expired reset link', 'warning')
         return redirect(url_for('auth.reset_request'))
     form = ResetPasswordForm()
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
-        flash('Your password has been updated! You are now able to log in', 'success')
+        flash('Password successfully updated', 'success')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', title='Reset Password', form=form)

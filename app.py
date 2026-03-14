@@ -48,13 +48,7 @@ with app.app_context():
                     conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
                     conn.commit()
                 except Exception:
-                    pass
-                
-                # New Migration for is_active
-                try:
-                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE'))
-                    conn.commit()
-                except Exception:
+                    # Likely already migrated or not Postgres
                     pass
             
             conn.commit()
@@ -79,6 +73,8 @@ def inject_globals():
     return dict(categories=categories, cart_count=cart_count, wishlist_product_ids=wishlist_product_ids)
 
 if __name__ == '__main__':
-    # Only enable debug if explicitly set or in development
-    is_debug = os.environ.get('FLASK_DEBUG', '0') == '1'
-    app.run(debug=is_debug)
+    import sys
+    port = 5000
+    if '--port' in sys.argv:
+        port = int(sys.argv[sys.argv.index('--port') + 1])
+    app.run(debug=True, port=port)
