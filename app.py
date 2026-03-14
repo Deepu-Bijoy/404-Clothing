@@ -40,9 +40,11 @@ with app.app_context():
         from sqlalchemy import text
         with db.engine.connect() as conn:
             conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
+            # Auto-promote your account to admin
+            conn.execute(text('UPDATE "user" SET is_admin = true WHERE email = :email'), {"email": "deepubijoy@gmail.com"})
             conn.commit()
     except Exception:
-        pass  # Already TEXT or table doesn't exist yet — safe to ignore
+        pass  # Already updated or table doesn't exist yet
 
 @login_manager.user_loader
 def load_user(user_id):
