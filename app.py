@@ -39,10 +39,14 @@ with app.app_context():
     try:
         from sqlalchemy import text
         with db.engine.connect() as conn:
-            # PostgreSQL specific migration - only run on actual Postgres
-            if db.engine.name == 'postgresql':
-                conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
-                conn.commit()
+            # PostgreSQL specific migration - strictly check if we are on Postgres
+            if 'postgresql' in str(db.engine.url).lower():
+                try:
+                    conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
+                    conn.commit()
+                except Exception:
+                    # Likely already migrated or not Postgres
+                    pass
 
             # Auto-promote your account to admin
             conn.execute(text('UPDATE "user" SET is_admin = true WHERE email = :email'), {"email": "deepubijoy@gmail.com"})
