@@ -32,12 +32,12 @@
                 <div class="filter-group">
                     <h6 class="filter-title">Categories</h6>
                     <div class="filter-checkbox">
-                        <input type="radio" name="category" id="cat-all" checked>
+                        <input type="radio" name="category" id="cat-all" checked onchange="window.location.href='{{ url_for('shop.search', q=query) }}';">
                         <label for="cat-all" class="text-muted"><a href="{{ url_for('shop.search', q=query) }}" class="text-decoration-none text-muted">All Matching</a></label>
                     </div>
                     {% for cat in categories %}
                     <div class="filter-checkbox">
-                        <input type="radio" name="category" id="cat-{{ cat.id }}">
+                        <input type="radio" name="category" id="cat-{{ cat.id }}" onchange="window.location.href='{{ url_for('shop.category_products', slug=cat.slug) }}';">
                         <label for="cat-{{ cat.id }}" class="text-muted"><a href="{{ url_for('shop.category_products', slug=cat.slug) }}" class="text-decoration-none text-muted">{{ cat.name }}</a></label>
                     </div>
                     {% endfor %}

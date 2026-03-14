@@ -39,8 +39,8 @@ with app.app_context():
     try:
         from sqlalchemy import text
         with db.engine.connect() as conn:
-            # PostgreSQL specific migration
-            if "postgresql" in str(db.engine.url):
+            # PostgreSQL specific migration - only run on actual Postgres
+            if db.engine.name == 'postgresql':
                 conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
                 conn.commit()
 
