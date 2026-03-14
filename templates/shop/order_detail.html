@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Order #{{ order.id }} — 404Clothing{% endblock %}
+{% block content %}
+<div class="row"><div class="col-md-8 mx-auto">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><p class="section-label mb-1">Order</p><h2 class="section-title mb-0">Order #{{ order.id }}</h2></div>
+        <a href="{{ url_for('shop.my_orders') }}" class="btn btn-outline-dark px-3" style="font-size:0.75rem;"><i class="fas fa-arrow-left me-1"></i>All Orders</a>
+    </div>
+    <!-- Timeline -->
+    <div class="p-4 mb-4" style="border: 1px solid var(--border-subtle);">
+        <p class="section-label mb-4">Order Status</p>
+        <div class="order-timeline">
+            <div class="timeline-item {% if order.status in ['Processing','Dispatched','Out for Delivery','Delivered'] %}active{% endif %}"><div class="timeline-icon"><i class="fas fa-check"></i></div><div class="timeline-content"><h6>Order Placed</h6><small>{{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</small></div></div>
+            <div class="timeline-item {% if order.status in ['Processing','Dispatched','Out for Delivery','Delivered'] %}active{% endif %}"><div class="timeline-icon"><i class="fas fa-clock"></i></div><div class="timeline-content"><h6>Processing</h6><small>Being prepared</small></div></div>
+            <div class="timeline-item {% if order.status in ['Dispatched','Out for Delivery','Delivered'] %}active{% endif %}"><div class="timeline-icon"><i class="fas fa-shipping-fast"></i></div><div class="timeline-content"><h6>Dispatched</h6><small>{% if order.dispatch_date %}{{ order.dispatch_date.strftime('%d %b %Y') }}{% else %}Awaiting dispatch{% endif %}</small></div></div>
+            <div class="timeline-item {% if order.status == 'Delivered' %}active{% endif %}"><div class="timeline-icon"><i class="fas fa-box-open"></i></div><div class="timeline-content"><h6>Delivered</h6><small>{% if order.delivered_date %}{{ order.delivered_date.strftime('%d %b %Y') }}{% elif order.estimated_delivery_date %}Expected {{ order.estimated_delivery_date.strftime('%d %b %Y') }}{% else %}Pending{% endif %}</small></div></div>
+        </div>
+    </div>
+    {% if order.tracking_number %}<div class="alert alert-info d-flex align-items-center mb-4"><i class="fas fa-info-circle me-2"></i><strong>Tracking:</strong>&nbsp;<code>{{ order.tracking_number }}</code></div>{% endif %}
+    <!-- Items -->
+    <div class="p-4 mb-4" style="border: 1px solid var(--border-subtle);">
+        <p class="section-label mb-3">Items</p>
+        {% for item in order.items %}
+        <div class="d-flex align-items-center py-3 {% if not loop.last %}border-bottom{% endif %}">
+            {% if item.product.image_url %}<img src="{{ item.product.image_url }}" class="me-3" style="width:60px;height:60px;object-fit:cover;border:1px solid var(--border-subtle);">{% endif %}
+            <div class="flex-grow-1"><h6 class="mb-0" style="font-size:0.88rem;">{{ item.product.name }}</h6><small class="text-muted">Qty: {{ item.quantity }} × ₹{{ item.price }}</small></div>
+            <strong>₹{{ item.quantity * item.price }}</strong>
+        </div>
+        {% endfor %}
+        <div class="d-flex justify-content-between mb-2"><span class="text-muted small">Subtotal</span><strong>₹{{ order.total_price - (order.shipping_fee or 50.0) }}</strong></div>
+        <div class="d-flex justify-content-between mb-3"><span class="text-muted small">Shipping Fee</span><strong>₹{{ order.shipping_fee or 50.0 }}</strong></div>
+        <div class="pt-3 mt-2 border-top d-flex justify-content-between"><h6 class="font-heading">Total</h6><h6 class="font-heading">₹{{ order.total_price }}</h6></div>
+    </div>
+    <!-- Address & Payment -->
+    <div class="row g-4">
+        <div class="col-md-6"><div class="p-4 h-100" style="border:1px solid var(--border-subtle);"><p class="section-label mb-3">Delivery Address</p><p class="mb-1"><strong>{{ order.full_name }}</strong></p><p class="mb-1 text-muted small">{{ order.address_line1 }}</p>{% if order.address_line2 %}<p class="mb-1 text-muted small">{{ order.address_line2 }}</p>{% endif %}<p class="mb-1 text-muted small">{{ order.city }}, {{ order.state }} — {{ order.postal_code }}</p><p class="mb-0 text-muted small">{{ order.country }}</p><p class="mb-0 mt-2 small"><strong>Phone:</strong> {{ order.phone_number }}</p></div></div>
+        <div class="col-md-6"><div class="p-4 h-100" style="border:1px solid var(--border-subtle);"><p class="section-label mb-3">Payment</p><p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">{{ order.payment_status }}</span></p>{% if order.payment %}<p class="mb-0"><strong>Method:</strong> {{ order.payment.payment_gateway }}</p>{% endif %}</div></div>
+    </div>
+</div></div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Size Guide — 404Clothing{% endblock %}
+{% block content %}
+<div class="text-center mb-5">
+    <p class="section-label mb-2">Fit Guide</p>
+    <h1 class="font-heading">Size Guide</h1>
+    <p style="color:var(--text-muted);font-size:0.92rem;">Find your perfect fit with our measurement charts.</p>
+</div>
+<div class="row justify-content-center"><div class="col-lg-10">
+    <div style="border:1px solid var(--border-subtle);">
+        <div class="p-0"><ul class="nav nav-tabs nav-fill" id="sizeTab"><li class="nav-item"><button class="nav-link active py-3" id="men-tab" data-bs-toggle="tab" data-bs-target="#men" type="button">Men's Sizing</button></li><li class="nav-item"><button class="nav-link py-3" id="women-tab" data-bs-toggle="tab" data-bs-target="#women" type="button">Women's Sizing</button></li></ul></div>
+        <div class="p-4 p-md-5">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="men">
+                    <p class="section-label mb-3">Men's Tops</p>
+                    <div class="table-responsive mb-5"><table class="table table-hover"><thead><tr><th>Size</th><th>Chest (in)</th><th>Waist (in)</th><th>Length (in)</th></tr></thead><tbody><tr><td>S</td><td>36–38</td><td>28–30</td><td>27</td></tr><tr><td>M</td><td>38–40</td><td>30–32</td><td>28</td></tr><tr><td>L</td><td>40–42</td><td>32–34</td><td>29</td></tr><tr><td>XL</td><td>42–44</td><td>34–36</td><td>30</td></tr><tr><td>XXL</td><td>44–46</td><td>36–38</td><td>31</td></tr></tbody></table></div>
+                    <p class="section-label mb-3">Men's Bottoms</p>
+                    <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Size</th><th>Waist (in)</th><th>Inseam (in)</th><th>Hip (in)</th></tr></thead><tbody><tr><td>30</td><td>30</td><td>32</td><td>36</td></tr><tr><td>32</td><td>32</td><td>32</td><td>38</td></tr><tr><td>34</td><td>34</td><td>32.5</td><td>40</td></tr><tr><td>36</td><td>36</td><td>32.5</td><td>42</td></tr><tr><td>38</td><td>38</td><td>33</td><td>44</td></tr></tbody></table></div>
+                </div>
+                <div class="tab-pane fade" id="women">
+                    <p class="section-label mb-3">Women's Tops & Dresses</p>
+                    <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Size</th><th>Bust (in)</th><th>Waist (in)</th><th>Hips (in)</th></tr></thead><tbody><tr><td>XS</td><td>30–32</td><td>24–26</td><td>34–36</td></tr><tr><td>S</td><td>32–34</td><td>26–28</td><td>36–38</td></tr><tr><td>M</td><td>34–36</td><td>28–30</td><td>38–40</td></tr><tr><td>L</td><td>36–38</td><td>30–32</td><td>40–42</td></tr><tr><td>XL</td><td>38–40</td><td>32–34</td><td>42–44</td></tr></tbody></table></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="text-center mt-4" style="color:var(--text-muted);font-size:0.88rem;">Need help? <a href="#" style="font-weight:600;">Contact our team</a></p>
+</div></div>
+{% endblock %}

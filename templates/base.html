@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}404Clothing - Online Fashion Store{% endblock %}</title>
+    <meta name="description" content="404Clothing — The latest trends in men's and women's fashion.">
+    
+    <!-- Google Fonts: Poppins, Montserrat, Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- NAVBAR (Souled Store Style) -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <!-- Left: Brand Logo -->
+            <a class="navbar-brand me-4" href="{{ url_for('shop.index') }}">404Clothing</a>
+            
+            <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Center: Categories / Navigation -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3">
+                    <li class="nav-item"><a class="nav-link fw-600" href="{{ url_for('shop.index') }}">Home</a></li>
+                    {% for category in categories %}
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="{{ url_for('shop.category_products', slug=category.slug) }}">{{ category.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                <!-- Right: Icons (Search, Profile, Wishlist, Cart) -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Search Feature -->
+                    <form action="{{ url_for('shop.search') }}" method="GET" class="d-none d-lg-flex position-relative me-3" style="width: 200px;">
+                        <input type="search" class="form-control rounded-pill bg-light border-0 ps-3 pe-5" placeholder="What are you looking for?" name="q" value="{{ request.args.get('q', '') }}" style="height: 38px; font-size: 0.8rem;">
+                        <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y p-0 pe-3 border-0" type="submit" style="color: var(--text-muted);">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+
+                    <!-- User Profile Dropdown / Login -->
+                    {% if current_user.is_authenticated %}
+                    <div class="dropdown">
+                        <a class="nav-icon dropdown-toggle d-flex align-items-center justify-content-center text-decoration-none" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="far fa-user"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-soft border-0 mt-2">
+                            <li><h6 class="dropdown-header fw-bold text-dark">Hi, {{ current_user.name.split(' ')[0] }}</h6></li>
+                            {% if current_user.is_admin %}
+                            <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="fas fa-chart-line me-2 text-muted"></i>Admin Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.users') }}"><i class="fas fa-users me-2 text-muted"></i>Manage Users</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.banners') }}"><i class="fas fa-images me-2 text-muted"></i>Slider Management</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{{ url_for('shop.my_orders') }}"><i class="fas fa-box me-2 text-muted"></i>My Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="nav-icon" title="Login"><i class="far fa-user"></i></a>
+                    {% endif %}
+
+                    <!-- Wishlist Icon -->
+                    <a href="{{ url_for('shop.wishlist') }}" class="nav-icon d-none d-sm-flex align-items-center justify-content-center" title="Wishlist">
+                        <i class="far fa-heart"></i>
+                    </a>
+
+                    <!-- Cart Icon -->
+                    <a href="{{ url_for('cart.view_cart') }}" class="nav-icon d-flex align-items-center justify-content-center" title="Cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        {% if cart_count and cart_count > 0 %}
+                        <span class="badge-cart">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    <div class="container-fluid px-4 px-lg-5 py-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-soft border-0 d-flex align-items-center rounded-soft" role="alert">
+                    <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-3 fs-5"></i>
+                    <div>{{ message }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>{% endfor %}
+            </div>
+        </div>{% endif %}{% endwith %}
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto py-5 bg-light border-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <h4 class="font-heading fw-bold mb-3 text-danger">404CLOTHING</h4>
+                    <p class="text-muted text-sm mb-4 pe-lg-5">
+                        Your one-stop destination for all things pop culture and quirky. We design apparel that speaks your vibe. 
+                    </p>
+                    <h6 class="fw-bold mb-3 font-heading">Follow Us</h6>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="https://www.instagram.com/404_mens_store?igsh=MTVvMTIzZW45dnZ5aw==" target="_blank" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: transform 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/916235453149" target="_blank" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: transform 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+
+                    <div class="contact-us-section mt-4">
+                        <button class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#contactDetails" aria-expanded="false">
+                            Contact Us <i class="fas fa-chevron-down ms-2"></i>
+                        </button>
+                        <div class="collapse mt-3" id="contactDetails">
+                            <ul class="list-unstyled text-sm text-muted">
+                                <li class="mb-2"><i class="fas fa-phone-alt me-2 text-danger"></i> +91 6235453149, +91 7025189167</li>
+                                <li class="mb-2"><i class="fas fa-envelope me-2 text-danger"></i> 404Clothing@gmail.com</li>
+                                <li class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i> Bus stand, Cherupuzha, Kannur</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <hr class="my-4 text-muted opacity-25">
+            
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center text-xs text-muted">
+                <p class="mb-0">&copy; 2026 404Clothing. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wishlist Toggle Functionality
+            const wishlistBtns = document.querySelectorAll('.btn-wishlist');
+            
+            wishlistBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    const icon = this.querySelector('i');
+                    
+                    fetch(`/wishlist/toggle/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': "{{ csrf_token() }}"
+                        }
+                    })
+                    .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = "{{ url_for('auth.login') }}";
+                            return;
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.status === 'added') {
+                            icon.classList.remove('far');
+                            icon.classList.add('fas', 'text-danger');
+                        } else if (data && data.status === 'removed') {
+                            icon.classList.remove('fas', 'text-danger');
+                            icon.classList.add('far');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

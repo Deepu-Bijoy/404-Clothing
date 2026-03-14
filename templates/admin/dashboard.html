@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Admin{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb text-sm mb-1">
+                    <li class="breadcrumb-item"><a href="{{ url_for('shop.index') }}" class="text-muted text-decoration-none hover-danger">Storefront</a></li>
+                    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Admin Dashboard</li>
+                </ol>
+            </nav>
+            <h2 class="font-heading fw-bold mb-0">Overview</h2>
+        </div>
+        <div class="d-flex gap-2">
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 rounded-soft shadow-sm bg-danger text-white h-100 position-relative overflow-hidden">
+                <!-- Decorative Circle -->
+                <div class="position-absolute" style="top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                
+                <div class="card-body p-4 position-relative z-1 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-xs fw-bold text-uppercase mb-1 opacity-75 letter-spacing-lg">Total Products</p>
+                            <h2 class="font-heading fw-bold mb-0 display-5">{{ products_count }}</h2>
+                        </div>
+                        <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="fas fa-tshirt fs-5"></i>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin.products') }}" class="text-white text-decoration-none text-sm fw-600 mt-3 d-inline-flex align-items-center group">
+                        Manage Catalog <i class="fas fa-arrow-right ms-2 transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 rounded-soft shadow-sm bg-dark text-white h-100 position-relative overflow-hidden">
+                <div class="position-absolute" style="top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
+                
+                <div class="card-body p-4 position-relative z-1 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-xs fw-bold text-uppercase mb-1 opacity-75 letter-spacing-lg">Total Orders</p>
+                            <h2 class="font-heading fw-bold mb-0 display-5">{{ orders_count }}</h2>
+                        </div>
+                        <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="fas fa-shopping-bag fs-5"></i>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin.orders') }}" class="text-white text-decoration-none text-sm fw-600 mt-3 d-inline-flex align-items-center opacity-75 hover-opacity-100">
+                        View Details <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 rounded-soft shadow-sm bg-white border border-light h-100 position-relative overflow-hidden transition-all hover-shadow-lg cursor-pointer" onclick="window.location='{{ url_for('admin.users') }}'">
+                <div class="position-absolute" style="bottom: -20px; right: -20px; width: 100px; height: 100px; background: rgba(230, 46, 4, 0.05); border-radius: 50%;"></div>
+                
+                <div class="card-body p-4 position-relative z-1 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-xs fw-bold text-uppercase mb-1 text-muted letter-spacing-lg">Registered Users</p>
+                            <h2 class="font-heading fw-bold mb-0 display-5 text-dark">{{ users_count }}</h2>
+                        </div>
+                        <div class="bg-light text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="fas fa-users fs-5"></i>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin.users') }}" class="text-danger text-decoration-none text-sm fw-600 mt-3 d-inline-flex align-items-center opacity-75 hover-opacity-100">
+                        Manage Users <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 rounded-soft shadow-sm bg-white border border-light h-100 position-relative overflow-hidden">
+                <div class="position-absolute" style="bottom: -20px; right: -20px; width: 100px; height: 100px; background: rgba(230, 46, 4, 0.05); border-radius: 50%;"></div>
+                
+                <div class="card-body p-4 position-relative z-1 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="min-w-0 pe-2">
+                            <p class="text-xs fw-bold text-uppercase mb-1 text-muted letter-spacing-lg">Top Seller</p>
+                            <h5 class="font-heading fw-bold mb-1 text-truncate text-dark">{{ top_seller.name if top_seller else 'N/A' }}</h5>
+                            <p class="text-xs fw-bold text-success mb-0 d-inline-flex align-items-center bg-success bg-opacity-10 px-2 py-1 rounded-pill mt-1">
+                                <i class="fas fa-arrow-trend-up me-1"></i> {{ top_sales_count|default(0) }} Units
+                            </p>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                            <i class="fas fa-crown fs-5"></i>
+                        </div>
+                    </div>
+                    {% if top_seller %}
+                    <a href="{{ url_for('shop.product_detail', product_id=top_seller.id) }}" class="text-dark text-decoration-none text-sm fw-600 mt-3 d-inline-flex align-items-center opacity-75 hover-opacity-100">
+                        View Product <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    <!-- Slider Management Card -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 rounded-soft shadow-sm bg-primary text-white h-100 position-relative overflow-hidden">
+                <div class="position-absolute" style="top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                <div class="card-body p-4 position-relative z-1 d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-xs fw-bold text-uppercase mb-1 opacity-75 letter-spacing-lg">Storefront</p>
+                            <h2 class="font-heading fw-bold mb-0" style="font-size: 1.5rem;">Slider Images</h2>
+                        </div>
+                        <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="fas fa-images fs-5"></i>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin.banners') }}" class="text-white text-decoration-none text-sm fw-600 mt-3 d-inline-flex align-items-center group">
+                        Manage Banners <i class="fas fa-arrow-right ms-2 transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Chart -->
+    <div class="card border-0 rounded-soft shadow-sm bg-white mb-5 border border-light">
+        <div class="card-header bg-white border-bottom border-light p-4 d-flex justify-content-between align-items-center">
+            <h5 class="font-heading fw-bold mb-0">Sales Analytics</h5>
+            <div class="dropdown">
+                <button class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-none dropdown-toggle text-xs fw-600" type="button" data-bs-toggle="dropdown">
+                    This Month
+                </button>
+                <ul class="dropdown-menu shadow-soft border-0">
+                    <li><a class="dropdown-item" href="#">This Week</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <canvas id="analyticsChart" height="100"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    new Chart(document.getElementById('analyticsChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: {{ product_names|tojson }},
+            datasets: [
+                {
+                    label: 'Total Sales',
+                    data: {{ product_sales|tojson }},
+                    backgroundColor: '#e62e04', // The Souled Store red accent
+                    borderColor: '#e62e04',
+                    borderWidth: 0,
+                    borderRadius: 4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Avg Rating',
+                    data: {{ product_ratings|tojson }},
+                    backgroundColor: '#111111', // Dark contrast
+                    borderColor: '#111111',
+                    borderWidth: 0,
+                    borderRadius: 4,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    position: 'left',
+                    grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+                    title: { display: true, text: 'Sales Count', font: { family: 'Inter', size: 12, weight: 600 } }
+                },
+                y1: {
+                    beginAtZero: true,
+                    position: 'right',
+                    max: 5,
+                    grid: { drawOnChartArea: false, drawBorder: false },
+                    title: { display: true, text: 'Rating (0-5)', font: { family: 'Inter', size: 12, weight: 600 } }
+                },
+                x: {
+                    grid: { display: false, drawBorder: false }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { font: { family: 'Inter', size: 13, weight: 500 }, usePointStyle: true, pointStyle: 'circle' }
+                },
+                tooltip: { 
+                    mode: 'index', 
+                    intersect: false,
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    titleFont: { family: 'Inter', size: 14, weight: 600 },
+                    bodyFont: { family: 'Inter', size: 13 },
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

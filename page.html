@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home — 404Clothing</title>
+    <meta name="description" content="404Clothing — The latest trends in men's and women's fashion.">
+    
+    <!-- Google Fonts: Poppins, Montserrat, Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- NAVBAR (Souled Store Style) -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <!-- Left: Brand Logo -->
+            <a class="navbar-brand me-4" href="/">404Clothing</a>
+            
+            <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Center: Categories / Navigation -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3">
+                    <li class="nav-item"><a class="nav-link fw-600" href="/">Home</a></li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/hoodie">HOODIE</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/jeans">JEANS</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/t-shirt">T-SHIRT</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/shirt">SHIRT</a>
+                    </li>
+                    
+                </ul>
+                
+                <!-- Right: Icons (Search, Profile, Wishlist, Cart) -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Search Feature -->
+                    <form action="/search" method="GET" class="d-none d-lg-flex position-relative me-3" style="width: 200px;">
+                        <input type="search" class="form-control rounded-pill bg-light border-0 ps-3 pe-5" placeholder="What are you looking for?" name="q" value="" style="height: 38px; font-size: 0.8rem;">
+                        <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y p-0 pe-3 border-0" type="submit" style="color: var(--text-muted);">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+
+                    <!-- User Profile Dropdown / Login -->
+                    
+                    <a href="/auth/login" class="nav-icon" title="Login"><i class="far fa-user"></i></a>
+                    
+
+                    <!-- Wishlist Icon -->
+                    <a href="/wishlist" class="nav-icon d-none d-sm-flex align-items-center justify-content-center" title="Wishlist">
+                        <i class="far fa-heart"></i>
+                    </a>
+
+                    <!-- Cart Icon -->
+                    <a href="/cart/" class="nav-icon d-flex align-items-center justify-content-center" title="Cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    <div class="container-fluid px-4 px-lg-5 py-3">
+        
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-grow-1">
+        
+
+<!-- HERO CAROUSEL -->
+<div class="container-fluid px-md-5 mt-4">
+    <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="4000">
+        <div class="carousel-indicators">
+            
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+            
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" ></button>
+            
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" ></button>
+            
+        </div>
+        <div class="carousel-inner h-100">
+            
+            <div class="carousel-item active h-100">
+                <img src="/static/uploads/banners/mens_banner_1.png" class="d-block w-100" alt="URBAN ESSENTIALS">
+                <div class="hero-content">
+                    
+                    <p class="text-xs fw-bold text-uppercase mb-2 text-white" style="letter-spacing: 2px;">URBAN ESSENTIALS</p>
+                    
+                    
+                    
+                    
+                    <h1>URBAN ESSENTIALS</h1>
+                    
+                    
+                    
+                    <p class="mb-4 fs-5 fw-light text-white opacity-75 d-none d-md-block" style="max-width: 400px;">Define your street signature.</p>
+                    
+                    
+                    
+                </div>
+            </div>
+            
+            <div class="carousel-item  h-100">
+                <img src="/static/uploads/banners/mens_banner_2.png" class="d-block w-100" alt="PREMIUM SELECTION">
+                <div class="hero-content">
+                    
+                    <p class="text-xs fw-bold text-uppercase mb-2 text-white" style="letter-spacing: 2px;">PREMIUM SELECTION</p>
+                    
+                    
+                    
+                    
+                    <h1>PREMIUM SELECTION</h1>
+                    
+                    
+                    
+                    <p class="mb-4 fs-5 fw-light text-white opacity-75 d-none d-md-block" style="max-width: 400px;">Crafted for the modern gentleman.</p>
+                    
+                    
+                    
+                </div>
+            </div>
+            
+            <div class="carousel-item  h-100">
+                <img src="/static/uploads/banners/mens_banner_3.png" class="d-block w-100" alt="CORE COLLECTION">
+                <div class="hero-content">
+                    
+                    <p class="text-xs fw-bold text-uppercase mb-2 text-white" style="letter-spacing: 2px;">CORE COLLECTION</p>
+                    
+                    
+                    
+                    
+                    <h1>CORE COLLECTION</h1>
+                    
+                    
+                    
+                    <p class="mb-4 fs-5 fw-light text-white opacity-75 d-none d-md-block" style="max-width: 400px;">Timeless styles for every closet.</p>
+                    
+                    
+                    
+                </div>
+            </div>
+            
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+
+<!-- CATEGORIES QUICK BLOCKS -->
+<div class="container-fluid px-4 px-lg-5 my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="font-heading fw-bold mb-0">Shop by Category</h3>
+        <a href="#collection" class="text-dark fw-bold text-decoration-none text-sm">View All <i class="fas fa-arrow-right ms-1"></i></a>
+    </div>
+    <div class="row g-3 g-md-4">
+        
+        <div class="col-6 col-md-3">
+            <a href="/category/hoodie" class="text-decoration-none">
+                <div class="card bg-dark text-white border-0 overflow-hidden rounded-soft shadow-sm" style="aspect-ratio: 3/4;">
+                    
+                    
+                    <img src="/static/uploads/categories/664e5981_Mens_Japanese_Dragon_Print_Knitted_Long_Sleeve_Hoodie.jpg" class="card-img" alt="HOODIE" style="opacity: 0.6; object-fit: cover; height: 100%; width: 100%;">
+                    <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                        <h5 class="card-title fw-bold mb-0 text-uppercase letter-spacing-lg text-center">HOODIE</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-3">
+            <a href="/category/jeans" class="text-decoration-none">
+                <div class="card bg-dark text-white border-0 overflow-hidden rounded-soft shadow-sm" style="aspect-ratio: 3/4;">
+                    
+                    
+                    <img src="/static/uploads/categories/11be3060_Herrenhose_mit_gerader_Form___Alltagstauglich_-_Mittelgrau___XXL.jpg" class="card-img" alt="JEANS" style="opacity: 0.6; object-fit: cover; height: 100%; width: 100%;">
+                    <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                        <h5 class="card-title fw-bold mb-0 text-uppercase letter-spacing-lg text-center">JEANS</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-3">
+            <a href="/category/t-shirt" class="text-decoration-none">
+                <div class="card bg-dark text-white border-0 overflow-hidden rounded-soft shadow-sm" style="aspect-ratio: 3/4;">
+                    
+                    
+                    <img src="/static/uploads/categories/f40b442d_Mens_Casual_Summer_Printed_Short_Sleeve_T-Shirt_With_Slogan.jpg" class="card-img" alt="T-SHIRT" style="opacity: 0.6; object-fit: cover; height: 100%; width: 100%;">
+                    <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                        <h5 class="card-title fw-bold mb-0 text-uppercase letter-spacing-lg text-center">T-SHIRT</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-6 col-md-3">
+            <a href="/category/shirt" class="text-decoration-none">
+                <div class="card bg-dark text-white border-0 overflow-hidden rounded-soft shadow-sm" style="aspect-ratio: 3/4;">
+                    
+                    
+                    <img src="/static/uploads/categories/b2b7a5d0_Jorge___Premium_Mens_Shirt_White-M.jpg" class="card-img" alt="SHIRT" style="opacity: 0.6; object-fit: cover; height: 100%; width: 100%;">
+                    <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                        <h5 class="card-title fw-bold mb-0 text-uppercase letter-spacing-lg text-center">SHIRT</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+<!-- TOP SELLERS / PRODUCT GRID SLIDER -->
+<div id="collection" class="container-fluid px-4 px-lg-5 my-5 pb-5">
+    <div class="text-center mb-5">
+        <h2 class="font-heading fw-bold">Trending Right Now</h2>
+        <p class="text-muted">The styles everybody is talking about.</p>
+    </div>
+    
+    <div class="trending-slider-container">
+        <!-- Navigation Buttons -->
+        <button class="slider-nav-btn slider-prev" id="prevBtn" aria-label="Previous product">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="slider-nav-btn slider-next" id="nextBtn" aria-label="Next product">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <div class="trending-slider-track" id="sliderTrack">
+            
+            <div class="trending-slider-item">
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <button class="btn-wishlist" aria-label="Add to wishlist" data-product-id="1">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        
+                        
+                        <span class="badge bg-dark position-absolute top-0 start-0 m-2 z-3 rounded-pill px-2 py-1">Bestseller</span>
+                        
+                        
+                        <a href="/product/1">
+                            <img src="/static/uploads/products/c6f31dde_download_12.jpg" alt="Shirt">
+                        </a>
+                        
+                        <form action="/cart/add/1" method="POST">
+                            <input type="hidden" name="csrf_token" value="IjcyMTRlZWY0YzhmMDI2NDE2NzU5NjgzNjFkNjg0ZTM0ZjEyZTJjM2Qi.abTguA.mjA1J3UQ_G3bv8LlIvUeA-rHVUs" />
+                            <button type="submit" class="w-100 quick-add-btn" >
+                                <i class="fas fa-shopping-bag me-1"></i> Quick Add
+                            </button>
+                        </form>
+                    </div>
+                    <div class="product-info">
+                        <a href="/product/1" class="text-decoration-none">
+                            <h3 class="product-title">Shirt</h3>
+                        </a>
+                        <div class="product-category">SHIRT</div>
+                        
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <div class="product-price">₹111.0</div>
+                            <div class="text-warning text-xs">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('sliderTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    let isTransitioning = false;
+    let autoPlayInterval;
+
+    function getStepWidth() {
+        const firstItem = track.querySelector('.trending-slider-item');
+        if (!firstItem) return 0;
+        const style = window.getComputedStyle(track);
+        const gap = parseFloat(style.gap) || 0;
+        return firstItem.offsetWidth + gap;
+    }
+
+    function moveNext() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        
+        const stepWidth = getStepWidth();
+        track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+        track.style.transform = `translateX(-${stepWidth}px)`;
+
+        track.addEventListener('transitionend', function() {
+            track.style.transition = 'none';
+            // Move the first element to the end
+            track.appendChild(track.firstElementChild);
+            track.style.transform = 'translateX(0)';
+            isTransitioning = false;
+        }, { once: true });
+    }
+
+    function movePrev() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        
+        const stepWidth = getStepWidth();
+        
+        // Move the last element to the beginning first (instantly)
+        track.style.transition = 'none';
+        track.insertBefore(track.lastElementChild, track.firstElementChild);
+        track.style.transform = `translateX(-${stepWidth}px)`;
+        
+        // Force reflow
+        track.offsetHeight;
+        
+        // Animate to 0
+        track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+        track.style.transform = 'translateX(0)';
+
+        track.addEventListener('transitionend', function() {
+            isTransitioning = false;
+        }, { once: true });
+    }
+
+    // Auto Play
+    function startAutoPlay() {
+        stopAutoPlay();
+        autoPlayInterval = setInterval(moveNext, 5000);
+    }
+
+    function stopAutoPlay() {
+        if (autoPlayInterval) clearInterval(autoPlayInterval);
+    }
+
+    nextBtn.addEventListener('click', () => {
+        moveNext();
+        startAutoPlay();
+    });
+
+    prevBtn.addEventListener('click', () => {
+        movePrev();
+        startAutoPlay();
+    });
+
+    // Pause on hover
+    track.parentElement.addEventListener('mouseenter', stopAutoPlay);
+    track.parentElement.addEventListener('mouseleave', startAutoPlay);
+
+    // Initial start
+    startAutoPlay();
+
+    // Handle window resize to recalculate widths if needed (implicitly handled by offsetWidth)
+    window.addEventListener('resize', () => {
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(0)';
+    });
+});
+</script>
+
+<!-- VALUE PROPS SECTION (Rounded Cards) -->
+<div class="container-fluid px-4 px-lg-5 py-5 mb-5 border-top border-bottom" style="background-color: #f1f3f5;">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-truck fs-4 text-dark"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Standard Shipping</h6>
+                <p class="text-muted text-xs mb-0">Flat ₹50 on all orders</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-shield-alt fs-4 text-dark"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Secure Payment</h6>
+                <p class="text-muted text-xs mb-0">100% secure checkout</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-headset fs-4 text-dark"></i>
+                </div>
+                <h6 class="fw-bold mb-1">24/7 Support</h6>
+                <p class="text-muted text-xs mb-0">Dedicated support</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto py-5 bg-light border-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <h4 class="font-heading fw-bold mb-3 text-danger">404CLOTHING</h4>
+                    <p class="text-muted text-sm mb-4 pe-lg-5">
+                        Your one-stop destination for all things pop culture and quirky. We design apparel that speaks your vibe. 
+                    </p>
+                    <h6 class="fw-bold mb-3 font-heading">Follow Us</h6>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="https://www.instagram.com/404_mens_store?igsh=MTVvMTIzZW45dnZ5aw==" target="_blank" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: transform 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/916235453149" target="_blank" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: transform 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+
+                    <div class="contact-us-section mt-4">
+                        <button class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#contactDetails" aria-expanded="false">
+                            Contact Us <i class="fas fa-chevron-down ms-2"></i>
+                        </button>
+                        <div class="collapse mt-3" id="contactDetails">
+                            <ul class="list-unstyled text-sm text-muted">
+                                <li class="mb-2"><i class="fas fa-phone-alt me-2 text-danger"></i> +91 6235453149, +91 7025189167</li>
+                                <li class="mb-2"><i class="fas fa-envelope me-2 text-danger"></i> 404Clothing@gmail.com</li>
+                                <li class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i> Bus stand, Cherupuzha, Kannur</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <hr class="my-4 text-muted opacity-25">
+            
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center text-xs text-muted">
+                <p class="mb-0">&copy; 2026 404Clothing. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wishlist Toggle Functionality
+            const wishlistBtns = document.querySelectorAll('.btn-wishlist');
+            
+            wishlistBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    const icon = this.querySelector('i');
+                    
+                    fetch(`/wishlist/toggle/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': "IjcyMTRlZWY0YzhmMDI2NDE2NzU5NjgzNjFkNjg0ZTM0ZjEyZTJjM2Qi.abTguA.mjA1J3UQ_G3bv8LlIvUeA-rHVUs"
+                        }
+                    })
+                    .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = "/auth/login";
+                            return;
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.status === 'added') {
+                            icon.classList.remove('far');
+                            icon.classList.add('fas', 'text-danger');
+                        } else if (data && data.status === 'removed') {
+                            icon.classList.remove('fas', 'text-danger');
+                            icon.classList.add('far');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
+    
+</body>
+
+</html>

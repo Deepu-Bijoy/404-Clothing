@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search: test — 404Clothing</title>
+    <meta name="description" content="404Clothing — The latest trends in men's and women's fashion.">
+    
+    <!-- Google Fonts: Poppins, Montserrat, Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- NAVBAR (Souled Store Style) -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <!-- Left: Brand Logo -->
+            <a class="navbar-brand me-4" href="/">404Clothing</a>
+            
+            <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Center: Categories / Navigation -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3">
+                    <li class="nav-item"><a class="nav-link fw-600" href="/">Home</a></li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/hoodie">HOODIE</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/jeans">JEANS</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/t-shirt">T-SHIRT</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link fw-600" href="/category/shirt">SHIRT</a>
+                    </li>
+                    
+                </ul>
+                
+                <!-- Right: Icons (Search, Profile, Wishlist, Cart) -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Search Feature -->
+                    <form action="/search" method="GET" class="d-none d-lg-flex position-relative me-3" style="width: 200px;">
+                        <input type="search" class="form-control rounded-pill bg-light border-0 ps-3 pe-5" placeholder="What are you looking for?" name="q" value="test" style="height: 38px; font-size: 0.8rem;">
+                        <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y p-0 pe-3 border-0" type="submit" style="color: var(--text-muted);">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+
+                    <!-- User Profile Dropdown / Login -->
+                    
+                    <a href="/auth/login" class="nav-icon" title="Login"><i class="far fa-user"></i></a>
+                    
+
+                    <!-- Wishlist Icon -->
+                    <a href="/wishlist" class="nav-icon d-none d-sm-flex align-items-center justify-content-center" title="Wishlist">
+                        <i class="far fa-heart"></i>
+                    </a>
+
+                    <!-- Cart Icon -->
+                    <a href="/cart/" class="nav-icon d-flex align-items-center justify-content-center" title="Cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    <div class="container-fluid px-4 px-lg-5 py-3">
+        
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-grow-1">
+        
+
+<!-- Header -->
+<div class="bg-light py-4 mb-5 border-bottom">
+    <div class="container-fluid px-4 px-lg-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2 text-xs text-uppercase fw-600" style="letter-spacing: 0.05em;">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Home</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">Search Results</li>
+            </ol>
+        </nav>
+        <h2 class="font-heading fw-bold mb-0 text-dark" style="font-size: 2.2rem;">Results for "test"</h2>
+        <p class="text-muted text-sm mt-2 mb-0">0 items found</p>
+    </div>
+</div>
+
+<div class="container-fluid px-4 px-lg-5 mb-5 pb-5">
+    <div class="row g-4 g-lg-5">
+        
+        <!-- SIDEBAR FILTERS (Mock UI) -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="sidebar-filter">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="font-heading fw-bold mb-0">Filters</h5>
+                    <a href="/search?q=test" class="text-xs text-muted text-decoration-underline">Clear All</a>
+                </div>
+                
+                <!-- Category Filter (Dynamic) -->
+                <div class="filter-group">
+                    <h6 class="filter-title">Categories</h6>
+                    <div class="filter-checkbox">
+                        <input type="radio" name="category" id="cat-all" checked>
+                        <label for="cat-all" class="text-muted"><a href="/search?q=test" class="text-decoration-none text-muted">All Matching</a></label>
+                    </div>
+                    
+                    <div class="filter-checkbox">
+                        <input type="radio" name="category" id="cat-4">
+                        <label for="cat-4" class="text-muted"><a href="/category/hoodie" class="text-decoration-none text-muted">HOODIE</a></label>
+                    </div>
+                    
+                    <div class="filter-checkbox">
+                        <input type="radio" name="category" id="cat-5">
+                        <label for="cat-5" class="text-muted"><a href="/category/jeans" class="text-decoration-none text-muted">JEANS</a></label>
+                    </div>
+                    
+                    <div class="filter-checkbox">
+                        <input type="radio" name="category" id="cat-6">
+                        <label for="cat-6" class="text-muted"><a href="/category/t-shirt" class="text-decoration-none text-muted">T-SHIRT</a></label>
+                    </div>
+                    
+                    <div class="filter-checkbox">
+                        <input type="radio" name="category" id="cat-7">
+                        <label for="cat-7" class="text-muted"><a href="/category/shirt" class="text-decoration-none text-muted">SHIRT</a></label>
+                    </div>
+                    
+                </div>
+                
+                <!-- Price Filter (Simple Links) -->
+                <div class="filter-group">
+                    <h6 class="filter-title">Price Range</h6>
+                    <div class="d-flex flex-column gap-2 mt-2">
+                        <a href="/search?q=test&amp;max_price=500" class="text-sm text-decoration-none text-muted">Under ₹500</a>
+                        <a href="/search?q=test&amp;min_price=500&amp;max_price=1000" class="text-sm text-decoration-none text-muted">₹500 - ₹1,000</a>
+                        <a href="/search?q=test&amp;min_price=1000&amp;max_price=2000" class="text-sm text-decoration-none text-muted">₹1,000 - ₹2,000</a>
+                        <a href="/search?q=test&amp;min_price=2000" class="text-sm text-decoration-none text-muted">Over ₹2,000</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- PRODUCT GRID -->
+        <div class="col-lg-9">
+            
+            
+            <!-- No Results -->
+            <div class="col-12 text-center py-5 my-5">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                    <i class="fas fa-search fs-1 text-muted"></i>
+                </div>
+                <h3 class="font-heading fw-bold mb-3">No matching results found</h3>
+                <p class="text-muted mb-4 fs-5" style="max-width: 400px; margin: 0 auto;">We couldn't find anything matching "test". Try searching for different keywords.</p>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="/" class="btn btn-primary rounded-pill px-5 py-2">Back to Home</a>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto py-5 bg-light border-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <h4 class="font-heading fw-bold mb-3 text-danger">404CLOTHING</h4>
+                    <p class="text-muted text-sm mb-4 pe-lg-5">
+                        Your one-stop destination for all things pop culture and quirky. We design apparel that speaks your vibe. 
+                    </p>
+                    <h6 class="fw-bold mb-3 font-heading">Follow Us</h6>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="https://www.instagram.com/404_mens_store?igsh=MTVvMTIzZW45dnZ5aw==" target="_blank" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: transform 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/916235453149" target="_blank" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: transform 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+
+                    <div class="contact-us-section mt-4">
+                        <button class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#contactDetails" aria-expanded="false">
+                            Contact Us <i class="fas fa-chevron-down ms-2"></i>
+                        </button>
+                        <div class="collapse mt-3" id="contactDetails">
+                            <ul class="list-unstyled text-sm text-muted">
+                                <li class="mb-2"><i class="fas fa-phone-alt me-2 text-danger"></i> +91 6235453149, +91 7025189167</li>
+                                <li class="mb-2"><i class="fas fa-envelope me-2 text-danger"></i> 404Clothing@gmail.com</li>
+                                <li class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i> Bus stand, Cherupuzha, Kannur</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <hr class="my-4 text-muted opacity-25">
+            
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center text-xs text-muted">
+                <p class="mb-0">&copy; 2026 404Clothing. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wishlist Toggle Functionality
+            const wishlistBtns = document.querySelectorAll('.btn-wishlist');
+            
+            wishlistBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    const icon = this.querySelector('i');
+                    
+                    fetch(`/wishlist/toggle/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': "Ijk4MjNhZjg0ODViZGYwYTIxYWU4MThiNmU2OWE0ZTVlNmI4MjFjYmMi.abThvA.VaSaIply24PhN8c0JCvMnPCXl24"
+                        }
+                    })
+                    .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = "/auth/login";
+                            return;
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.status === 'added') {
+                            icon.classList.remove('far');
+                            icon.classList.add('fas', 'text-danger');
+                        } else if (data && data.status === 'removed') {
+                            icon.classList.remove('fas', 'text-danger');
+                            icon.classList.add('far');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
+    
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Register — 404Clothing{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 py-5 my-md-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-7 col-lg-5 col-xl-4">
+            <div class="card auth-card text-center mb-5">
+                <div class="mb-4">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3">
+                        <i class="fas fa-user-plus text-dark" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="font-heading fw-bold mb-2">Create Account</h2>
+                    <p class="text-muted text-sm">Join the 404Clothing community</p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4 text-start">
+                        {{ form.name.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.name.errors %}
+                            {{ form.name(class="form-control bg-light is-invalid", placeholder="Full Name") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.name.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.name(class="form-control bg-light", placeholder="Full Name") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        {{ form.email.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control bg-light is-invalid", placeholder="name@example.com") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.email.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control bg-light", placeholder="name@example.com") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4 text-start">
+                        {{ form.password.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.password.errors %}
+                            {{ form.password(class="form-control bg-light is-invalid", placeholder="••••••••") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.password.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.password(class="form-control bg-light", placeholder="••••••••") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        {{ form.confirm_password.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.confirm_password.errors %}
+                            {{ form.confirm_password(class="form-control bg-light is-invalid", placeholder="••••••••") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.confirm_password.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.confirm_password(class="form-control bg-light", placeholder="••••••••") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        <p class="text-xs text-muted mb-0">By creating an account, you agree to our <a href="#" class="text-dark text-decoration-underline">Terms of Service</a> and <a href="#" class="text-dark text-decoration-underline">Privacy Policy</a>.</p>
+                    </div>
+                    
+                    {{ form.submit(class="btn btn-primary w-100 py-3 mb-4 rounded-pill fw-bold text-uppercase shadow-soft", style="letter-spacing: 1px;") }}
+                    
+                    <p class="text-center text-muted text-sm mt-2">
+                        Already have an account? 
+                        <a href="{{ url_for('auth.login') }}" class="text-danger fw-bold text-decoration-none ms-1">Sign In</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

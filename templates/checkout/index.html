@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — 404Clothing{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 mt-4 mb-5">
+    <div class="mb-5 text-center">
+        <h2 class="font-heading fw-bold mb-2">Secure Checkout</h2>
+        <p class="text-muted text-sm"><i class="fas fa-lock me-1"></i> SSL Encrypted Connection</p>
+    </div>
+
+    <div class="row g-5 flex-column-reverse flex-lg-row">
+        <!-- Main Checkout Column -->
+        <div class="col-lg-7 pe-lg-5">
+            {% if payment_ready %}
+            <!-- Payment Section -->
+            <div class="card border-0 rounded-soft shadow-sm mb-5 border-top border-4 border-danger">
+                <div class="card-body p-4 p-lg-5">
+                    <h4 class="font-heading fw-bold mb-4">Payment Information</h4>
+                    
+                    <div class="bg-light rounded-soft p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold text-dark">Shipping To</span>
+                            <span class="badge bg-success-bg text-success rounded-pill px-3 py-1"><i class="fas fa-check-circle me-1"></i> Verified</span>
+                        </div>
+                        <address class="mb-0 text-muted">
+                            <strong class="text-dark">{{ request.form.full_name or form.full_name.data }}</strong><br>
+                            {{ request.form.address_line1 or form.address_line1.data }}<br>
+                            {% if request.form.address_line2 or form.address_line2.data %}
+                            {{ request.form.address_line2 or form.address_line2.data }}<br>
+                            {% endif %}
+                            {{ request.form.city or form.city.data }}, {{ request.form.state or form.state.data }}<br>
+                            {{ request.form.postal_code or form.postal_code.data }}<br>
+                            {{ request.form.country or form.country.data }}
+                        </address>
+                        <div class="mt-3 text-end">
+                            <a href="{{ url_for('checkout.index') }}" class="text-danger text-sm fw-600 text-decoration-none"><i class="fas fa-edit me-1"></i> Edit Address</a>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info rounded-soft border-0 d-flex gap-3 align-items-center mb-4 p-3 bg-primary bg-opacity-10 text-dark">
+                        <i class="fas fa-info-circle text-primary fs-4"></i>
+                        <div>
+                            <strong>Payment Total: ₹{{ total_price }}</strong><br>
+                            <span class="text-sm">Please select a payment method below to complete your order.</span>
+                        </div>
+                    </div>
+                    
+                    <button id="rzp-button1" class="btn btn-primary w-100 py-3 rounded-pill fw-bold text-uppercase shadow-soft mb-3 d-flex align-items-center justify-content-center gap-2">
+                        Pay via Razorpay <i class="fas fa-shield-alt"></i>
+                    </button>
+                    
+                </div>
+            </div>
+            {% else %}
+            <!-- Information & Shipping Form -->
+            <div class="card border-0 rounded-soft shadow-sm">
+                <div class="card-body p-4 p-lg-5">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Contact Info -->
+                        <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom border-light">
+                            <span class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; font-size: 0.8rem;">1</span>
+                            <h5 class="font-heading fw-bold mb-0">Contact Information</h5>
+                        </div>
+                        
+                        <div class="row g-4 mb-5">
+                            <div class="col-12 col-md-6">
+                                {{ form.full_name.label(class="form-label fw-600 text-sm") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-light text-muted"><i class="far fa-user"></i></span>
+                                    {{ form.full_name(class="form-control bg-light border-light py-2 text-dark px-3", placeholder="Full Name") }}
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                {{ form.phone_number.label(class="form-label fw-600 text-sm") }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-light text-muted"><i class="fas fa-phone-alt"></i></span>
+                                    {{ form.phone_number(class="form-control bg-light border-light py-2 text-dark px-3", placeholder="Phone Number") }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Shipping Address -->
+                        <div class="d-flex align-items-center gap-2 mb-4 pb-2 border-bottom border-light">
+                            <span class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; font-size: 0.8rem;">2</span>
+                            <h5 class="font-heading fw-bold mb-0">Shipping Address</h5>
+                        </div>
+                        
+                        <div class="row g-4 mb-5">
+                            <div class="col-12">
+                                {{ form.address_line1.label(class="form-label fw-600 text-sm") }}
+                                {{ form.address_line1(class="form-control bg-light border-light py-2 px-3", placeholder="Street address, P.O. box, company name") }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.address_line2.label(class="form-label fw-600 text-sm") }} <span class="text-muted fw-normal text-xs">(Optional)</span>
+                                {{ form.address_line2(class="form-control bg-light border-light py-2 px-3", placeholder="Apartment, suite, unit, building, floor, etc.") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.city.label(class="form-label fw-600 text-sm") }}
+                                {{ form.city(class="form-control bg-light border-light py-2 px-3") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.state.label(class="form-label fw-600 text-sm") }}
+                                {{ form.state(class="form-control bg-light border-light py-2 px-3") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.postal_code.label(class="form-label fw-600 text-sm") }}
+                                {{ form.postal_code(class="form-control bg-light border-light py-2 px-3") }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.country.label(class="form-label fw-600 text-sm") }}
+                                {{ form.country(class="form-control bg-light border-light py-2 px-3") }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex flex-column align-items-center mt-5 pt-3 border-top border-light">
+                            {{ form.submit(class="btn btn-primary w-100 py-3 rounded-pill fw-bold text-uppercase shadow-soft text-white mb-3", style="font-size: 1.1rem;") }}
+                            <p class="text-xs text-muted"><i class="fas fa-undo me-1"></i> You can review this order before it's final.</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Order Summary Sidebar -->
+        <div class="col-lg-5">
+            <div class="bg-light rounded-soft p-4 p-lg-5 sticky-top border border-light" style="top: 100px;">
+                <h5 class="font-heading fw-bold mb-4 d-flex justify-content-between align-items-center">
+                    Order Summary 
+                    <span class="badge bg-dark rounded-pill">{{ cart_items|length }}</span>
+                </h5>
+                
+                <!-- Items list -->
+                <div class="mb-4 d-flex flex-column gap-3 overflow-auto pe-2" style="max-height: 400px;">
+                    {% for item in cart_items %}
+                    {% if item.product %}
+                    <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-soft border border-light">
+                        <div class="position-relative flex-shrink-0">
+                            <img src="{{ item.product.image_url or 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=100&q=80' }}" class="rounded shadow-sm" style="width: 60px; height: 80px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-dark fw-bold border border-white border-2" style="font-size: 0.7rem; padding: 0.4em 0.6em;">{{ item.quantity }}</span>
+                        </div>
+                        <div class="flex-grow-1 min-w-0">
+                            <h6 class="mb-1 fw-bold text-truncate text-dark" style="font-size: 0.9rem;">{{ item.product.name }}</h6>
+                            <p class="text-muted text-xs mb-2">{{ item.product.category.name if item.product.category else 'Product' }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted text-sm">₹{{ item.product.price }} x {{ item.quantity }}</span>
+                                <span class="fw-bold text-danger text-sm">₹{{ item.product.price * item.quantity }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                
+
+                <!-- Totals -->
+                <div class="bg-white rounded-soft p-4 border border-light">
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-muted text-sm border-bottom border-light pb-3">
+                        <span>Subtotal</span>
+                        <span class="fw-bold text-dark">₹{{ subtotal }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-muted text-sm border-bottom border-light pb-3">
+                        <span>Shipping Fee</span>
+                        <span class="text-danger fw-bold">₹{{ shipping_fee }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="font-heading fw-bold fs-5 text-dark">Total</span>
+                        <div class="text-end">
+                            <span class="text-xs text-muted d-block mb-1">INR</span>
+                            <strong class="font-heading text-danger" style="font-size: 1.5rem;">₹{{ total_price }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if payment_ready %}
+<!-- Hidden Payment Form -->
+<form action="{{ url_for('payment.verify') }}" method="POST" id="payment-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+</form>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+{% if payment_ready %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        key: "{{ razorpay_key_id }}",
+        amount: "{{ total_price * 100 }}",
+        currency: "INR",
+        name: "404Clothing",
+        description: "Order Payment",
+        order_id: "{{ razorpay_order_id }}",
+        handler: function(response){
+            document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+            document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+            document.getElementById('razorpay_signature').value = response.razorpay_signature;
+            document.getElementById('payment-form').submit();
+        },
+        prefill: {
+            name: "{{ current_user.name }}",
+            email: "{{ current_user.email }}",
+            contact: "{{ form.phone_number.data }}"
+        },
+        theme: {
+            color: "#e62e04" // Set to accent var
+        },
+        modal: {
+            ondismiss: function(){}
+        },
+        method: {
+            upi: true,
+            card: true,
+            netbanking: false,
+            wallet: false,
+            emi: false,
+            paylater: false
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+        alert('Payment Failed: ' + response.error.description);
+    });
+    document.getElementById('rzp-button1').onclick = function(e){
+        e.preventDefault();
+        rzp1.open();
+    }
+</script>
+{% endif %}
+{% endblock %}

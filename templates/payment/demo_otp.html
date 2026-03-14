@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Payment — 404Clothing{% endblock %}
+{% block content %}
+<div class="row justify-content-center py-5"><div class="col-md-5">
+    <div style="border:1px solid var(--border-subtle);box-shadow:var(--shadow-md);">
+        <div class="p-4 text-center" style="background:var(--text-primary);color:white;"><i class="fas fa-shield-alt fa-2x mb-2"></i><h5 class="mb-0 font-heading">Secure Verification</h5><p class="small mb-0 opacity-50">Demo Netbanking Gateway</p></div>
+        <div class="p-4">
+            <div class="text-center mb-4"><p class="text-muted">Enter OTP for</p><h3 class="font-heading">₹{{ total_price }}</h3></div>
+            <form action="{{ url_for('payment.verify_demo_otp') }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-4 text-center"><label class="form-label">6-Digit OTP</label><input type="text" name="otp" class="form-control text-center fw-bold letter-spacing-lg" placeholder="0 0 0 0 0 0" maxlength="6" required pattern="\d{6}"><small class="form-text"><i class="fas fa-info-circle me-1"></i>Demo OTP: <strong>123456</strong></small></div>
+                <button type="submit" class="btn btn-dark w-100 py-3">Verify & Pay</button>
+                <div class="text-center mt-3"><a href="{{ url_for('checkout.index') }}" class="btn btn-link small">Cancel</a></div>
+            </form>
+        </div>
+        <div class="text-center py-3" style="background:var(--bg-secondary);border-top:1px solid var(--border-subtle);"><small class="text-muted"><i class="fas fa-lock me-1"></i>Connection encrypted</small></div>
+    </div>
+</div></div>
+{% endblock %}

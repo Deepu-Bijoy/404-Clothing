@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Login — 404Clothing{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 py-5 my-md-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-7 col-lg-5 col-xl-4">
+            <div class="card auth-card text-center mb-5">
+                <div class="mb-4">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3">
+                        <i class="far fa-user text-dark" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="font-heading fw-bold mb-2">Welcome Back</h2>
+                    <p class="text-muted text-sm">Sign in to your account</p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4 text-start">
+                        {{ form.email.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control bg-light is-invalid", placeholder="name@example.com") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.email.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control bg-light", placeholder="name@example.com") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4 text-start">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            {{ form.password.label(class="form-label fw-600 text-sm mb-0 text-dark") }}
+                            <a href="#" class="text-muted text-xs text-decoration-underline" style="text-underline-offset: 4px;">Forgot password?</a>
+                        </div>
+                        {% if form.password.errors %}
+                            {{ form.password(class="form-control bg-light is-invalid", placeholder="••••••••") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.password.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.password(class="form-control bg-light", placeholder="••••••••") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+                            <label class="form-check-label text-sm text-muted" for="rememberMe">
+                                Remember me
+                            </label>
+                        </div>
+                    </div>
+                    
+                    {{ form.submit(class="btn btn-primary w-100 py-3 mb-4 rounded-pill fw-bold text-uppercase shadow-soft", style="letter-spacing: 1px;") }}
+                    
+                    <p class="text-center text-muted text-sm mt-2">
+                        Don't have an account? 
+                        <a href="{{ url_for('auth.register') }}" class="text-danger fw-bold text-decoration-none ms-1">Sign Up</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

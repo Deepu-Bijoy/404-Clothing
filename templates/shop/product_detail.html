@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — 404Clothing{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 mt-4 mb-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb text-sm fw-600">
+            <li class="breadcrumb-item"><a href="{{ url_for('shop.index') }}" class="text-muted text-decoration-none hover-danger">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('shop.category_products', slug=product.category.slug) }}" class="text-muted text-decoration-none hover-danger">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5 mb-5">
+        <!-- Product Images -->
+        <div class="col-md-6">
+            <div class="row g-3">
+                <div class="col-2 d-none d-md-block">
+                    <!-- Thumbnails -->
+                    <div class="d-flex flex-column gap-3">
+                        {% if product.images %}
+                            {% for image in product.images %}
+                            <img src="{{ image.image_url }}" class="img-fluid rounded-soft shadow-sm product-thumbnails {% if loop.first %}active{% endif %}" alt="Thumbnail" data-bs-target="#productCarousel" data-bs-slide-to="{{ loop.index0 }}" style="height: 100px; object-fit: cover; opacity: 0.7;">
+                            {% endfor %}
+                        {% else %}
+                            <img src="{{ product.image_url or 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=200&q=80' }}" class="img-fluid rounded-soft shadow-sm product-thumbnails active" style="height: 100px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-12 col-md-10">
+                    <!-- Main Image Carousel -->
+                    <div id="productCarousel" class="carousel slide product-gallery" data-bs-ride="carousel">
+                        <div class="carousel-inner h-100">
+                            {% if product.images %}
+                                {% for image in product.images %}
+                                <div class="carousel-item {% if loop.first %}active{% endif %} h-100">
+                                    <img src="{{ image.image_url }}" class="d-block w-100 h-100" style="object-fit: contain; min-height: 50vh; max-height: 70vh; background-color: #fff;" alt="{{ product.name }}">
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="carousel-item active h-100">
+                                    <img src="{{ product.image_url or 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1200&q=80' }}" class="d-block w-100 h-100" style="object-fit: contain; min-height: 50vh; max-height: 70vh; background-color: #fff;" alt="{{ product.name }}">
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Wishlist Overlay -->
+                        <button class="btn-wishlist shadow-soft" style="top: 20px; right: 20px; width: 45px; height: 45px; font-size: 1.2rem;" data-product-id="{{ product.id }}">
+                            <i class="{% if product.id in wishlist_product_ids %}fas text-danger{% else %}far{% endif %} fa-heart"></i>
+                        </button>
+
+                        {% if product.images and product.images|length > 1 %}
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon shadow-sm" style="background-color: var(--text-dark); border-radius: 50%; padding: 1.5rem;" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon shadow-sm" style="background-color: var(--text-dark); border-radius: 50%; padding: 1.5rem;" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Mobile Thumbnails -->
+                    <div class="d-flex gap-2 mt-3 d-md-none overflow-auto pb-2">
+                        {% if product.images %}
+                            {% for image in product.images %}
+                            <img src="{{ image.image_url }}" class="rounded-soft shadow-sm product-thumbnails {% if loop.first %}active{% endif %}" data-bs-target="#productCarousel" data-bs-slide-to="{{ loop.index0 }}" style="width: 70px; height: 70px; object-fit: cover; flex-shrink: 0;">
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="sticky-top pt-md-3" style="top: 100px;">
+                <h1 class="font-heading fw-bold mb-2">{{ product.name }}</h1>
+                <p class="text-muted text-uppercase text-sm fw-600 mb-3">{{ product.category.name }}</p>
+                
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <h2 class="mb-0 fw-bold text-danger">₹{{ product.price }}</h2>
+                    {% if reviews %}
+                    <div class="d-flex align-items-center bg-light rounded-pill px-3 py-1 text-sm">
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <span class="fw-bold">{{ avg_rating|round(1) }}</span>
+                        <span class="text-muted ms-1">({{ reviews|length }})</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    {% if product.stock > 0 %}
+                    <span class="badge bg-success-bg text-success fw-bold px-3 py-2 rounded-pill shadow-sm"><i class="fas fa-check-circle me-1"></i> In Stock ({{ product.stock }})</span>
+                    {% else %}
+                    <span class="badge bg-danger-bg text-danger fw-bold px-3 py-2 rounded-pill shadow-sm"><i class="fas fa-times-circle me-1"></i> Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <!-- Mock Size Selector -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="fw-bold fs-6">Select Size</label>
+                        <a href="{{ url_for('shop.size_guide') }}" class="text-danger text-sm fw-600 text-decoration-none"><i class="fas fa-ruler me-1"></i> Size Guide</a>
+                    </div>
+                    <div class="size-selector">
+                        <div class="size-btn">S</div>
+                        <div class="size-btn active">M</div>
+                        <div class="size-btn">L</div>
+                        <div class="size-btn">XL</div>
+                        <div class="size-btn">XXL</div>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST" class="mb-5">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="row g-3">
+                        <div class="col-3">
+                            <select name="quantity" class="form-select form-select-lg rounded-pill text-center fw-bold shadow-soft h-100" {% if product.stock <= 0 %}disabled{% endif %}>
+                                {% for i in range(1, [(product.stock + 1), 11]|min) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-9">
+                            <button type="submit" class="btn btn-primary w-100 h-100 fs-5 rounded-pill shadow-soft d-flex align-items-center justify-content-center gap-2" {% if product.stock <= 0 %}disabled{% endif %}>
+                                <i class="fas fa-shopping-bag"></i> Add to Bag
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="card border-0 bg-light rounded-soft mb-5 overflow-hidden">
+                    <div class="card-body p-4 d-flex flex-column gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fas fa-truck text-dark fs-5 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Standard Delivery</h6>
+                                <p class="text-muted text-sm mb-0">Fast Delivery</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fas fa-check-circle text-dark fs-5 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Quality Assured</h6>
+                                <p class="text-muted text-sm mb-0">Premium products</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fas fa-shield-alt text-dark fs-5 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Secure Checkout</h6>
+                                <p class="text-muted text-sm mb-0">Verified payments</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Detail Accordion -->
+                <div class="accordion accordion-flush bg-transparent" id="productAccordion">
+                    <div class="accordion-item bg-transparent border-bottom">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button bg-transparent shadow-none fw-bold fs-6 px-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDesc">
+                                Product Description
+                            </button>
+                        </h2>
+                        <div id="collapseDesc" class="accordion-collapse collapse show" data-bs-parent="#productAccordion">
+                            <div class="accordion-body px-0 text-muted pb-4">
+                                {{ product.description }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-transparent border-bottom">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed bg-transparent shadow-none fw-bold fs-6 px-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCare">
+                                Care Instructions
+                            </button>
+                        </h2>
+                        <div id="collapseCare" class="accordion-collapse collapse" data-bs-parent="#productAccordion">
+                            <div class="accordion-body px-0 text-muted pb-4">
+                                Machine wash cold with like colors. Tumble dry low. Do not bleach. Iron on low heat if necessary.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reviews Section -->
+<div class="container-fluid px-4 px-lg-5 py-5 bg-light mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="text-center mb-5">
+                <h2 class="font-heading fw-bold mb-3">Customer Reviews</h2>
+                <div class="d-inline-flex align-items-center bg-white rounded-pill px-4 py-2 shadow-sm">
+                    {% if reviews %}
+                        <span class="fs-4 fw-bold me-2">{{ avg_rating|round(1) }}</span>
+                        <div class="text-warning fs-5 me-2">
+                            {% for i in range(1, 6) %}
+                                {% if avg_rating >= i %}
+                                    <i class="fas fa-star"></i>
+                                {% elif avg_rating >= i - 0.5 %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-muted text-sm">Based on {{ reviews|length }} reviews</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated %}
+            <div class="card border-0 rounded-soft shadow-sm mb-5">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="font-heading fw-bold mb-4 text-center">Write a Review</h4>
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-4 text-center">
+                            <label class="form-label d-block fw-600 mb-2">Overall Rating</label>
+                            <div class="star-rating d-inline-flex flex-row-reverse justify-content-center">
+                                {% for i in range(5, 0, -1) %}
+                                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required />
+                                <label for="star{{ i }}" style="cursor: pointer; color: var(--border-light); font-size: 2rem; transition: color 0.2s;"><i class="fas fa-star px-1"></i></label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            {{ form.comment.label(class="form-label fw-600") }}
+                            {{ form.comment(class="form-control rounded-soft border-light bg-light", rows=4, placeholder="What did you like or dislike about this product?") }}
+                        </div>
+                        <div class="mb-4">
+                            {{ form.photos.label(class="form-label fw-600") }}
+                            {{ form.photos(class="form-control rounded-soft border-light bg-light py-2") }}
+                        </div>
+                        <div class="text-center">
+                            {{ form.submit(class="btn btn-dark rounded-pill px-5 py-3 shadow-soft") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center p-5 bg-white rounded-soft shadow-sm mb-5">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="far fa-user fs-1 text-muted"></i>
+                </div>
+                <h5 class="font-heading fw-bold mb-2">Join the Conversation</h5>
+                <p class="text-muted mb-4">Please log in to share your thoughts with others.</p>
+                <a href="{{ url_for('auth.login', next=request.url) }}" class="btn btn-dark rounded-pill px-5 py-2">Login to Review</a>
+            </div>
+            {% endif %}
+
+            <div class="reviews-list mt-5">
+                {% if reviews %}
+                {% for review in reviews %}
+                <div class="card border-0 rounded-soft shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex justify-content-center align-items-center bg-dark text-white rounded-circle fw-bold fs-5" style="width: 50px; height: 50px;">
+                                    {{ review.user.name[0].upper() }}
+                                </div>
+                                <div>
+                                    <strong class="d-block text-dark">{{ review.user.name }}</strong>
+                                    <small class="text-muted flex align-items-center gap-1"><i class="fas fa-check-circle text-success" style="font-size: 0.7rem;"></i> Verified Buyer</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-warning text-sm mb-1">
+                                    {% for i in range(review.rating) %}<i class="fas fa-star"></i>{% endfor %}
+                                    {% for i in range(5 - review.rating) %}<i class="far fa-star text-muted opacity-25"></i>{% endfor %}
+                                </div>
+                                <span class="text-muted text-xs">{{ review.created_at.strftime('%d %b %Y') }}</span>
+                            </div>
+                        </div>
+                        <p class="mb-3 text-dark mt-3">{{ review.comment }}</p>
+                        {% if review.images %}
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            {% for img in review.images %}
+                            <a href="{{ img.image_url }}" target="_blank">
+                                <img src="{{ img.image_url }}" class="rounded-soft shadow-sm" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid white;">
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted mb-0">No reviews yet. Be the first to share your thoughts!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom Star Rating Hover Logic */
+.star-rating input { display: none; }
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: var(--warning) !important;
+}
+
+.product-thumbnails { cursor: pointer; border: 2px solid transparent; transition: all 0.3s; }
+.product-thumbnails.active { border-color: var(--text-dark); opacity: 1 !important; }
+.product-thumbnails:hover { opacity: 1 !important; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const thumbnails = document.querySelectorAll('.product-thumbnails');
+        const carousel = document.getElementById('productCarousel');
+        
+        if(carousel) {
+            carousel.addEventListener('slide.bs.carousel', function (e) {
+                thumbnails.forEach(t => t.classList.remove('active'));
+                const newActive = Array.from(thumbnails).find(t => parseInt(t.getAttribute('data-bs-slide-to')) === e.to);
+                if(newActive) newActive.classList.add('active');
+            });
+        }
+    });
+</script>
+{% endblock %}

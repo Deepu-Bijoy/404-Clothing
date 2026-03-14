@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Search: {{ query }} — 404Clothing{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="bg-light py-4 mb-5 border-bottom">
+    <div class="container-fluid px-4 px-lg-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2 text-xs text-uppercase fw-600" style="letter-spacing: 0.05em;">
+                <li class="breadcrumb-item"><a href="{{ url_for('shop.index') }}" class="text-decoration-none text-muted">Home</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">Search Results</li>
+            </ol>
+        </nav>
+        <h2 class="font-heading fw-bold mb-0 text-dark" style="font-size: 2.2rem;">Results for "{{ query }}"</h2>
+        <p class="text-muted text-sm mt-2 mb-0">{{ products|length }} items found</p>
+    </div>
+</div>
+
+<div class="container-fluid px-4 px-lg-5 mb-5 pb-5">
+    <div class="row g-4 g-lg-5">
+        
+        <!-- SIDEBAR FILTERS (Mock UI) -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="sidebar-filter">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="font-heading fw-bold mb-0">Filters</h5>
+                    <a href="{{ url_for('shop.search', q=query) }}" class="text-xs text-muted text-decoration-underline">Clear All</a>
+                </div>
+                
+                <!-- Category Filter (Dynamic) -->
+                <div class="filter-group">
+                    <h6 class="filter-title">Categories</h6>
+                    <div class="filter-checkbox">
+                        <input type="radio" name="category" id="cat-all" checked>
+                        <label for="cat-all" class="text-muted"><a href="{{ url_for('shop.search', q=query) }}" class="text-decoration-none text-muted">All Matching</a></label>
+                    </div>
+                    {% for cat in categories %}
+                    <div class="filter-checkbox">
+                        <input type="radio" name="category" id="cat-{{ cat.id }}">
+                        <label for="cat-{{ cat.id }}" class="text-muted"><a href="{{ url_for('shop.category_products', slug=cat.slug) }}" class="text-decoration-none text-muted">{{ cat.name }}</a></label>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Price Filter (Simple Links) -->
+                <div class="filter-group">
+                    <h6 class="filter-title">Price Range</h6>
+                    <div class="d-flex flex-column gap-2 mt-2">
+                        <a href="{{ url_for('shop.search', q=query, max_price=500) }}" class="text-sm text-decoration-none {% if request.args.get('max_price') == '500' %}fw-bold text-dark{% else %}text-muted{% endif %}">Under ₹500</a>
+                        <a href="{{ url_for('shop.search', q=query, min_price=500, max_price=1000) }}" class="text-sm text-decoration-none {% if request.args.get('min_price') == '500' %}fw-bold text-dark{% else %}text-muted{% endif %}">₹500 - ₹1,000</a>
+                        <a href="{{ url_for('shop.search', q=query, min_price=1000, max_price=2000) }}" class="text-sm text-decoration-none {% if request.args.get('min_price') == '1000' %}fw-bold text-dark{% else %}text-muted{% endif %}">₹1,000 - ₹2,000</a>
+                        <a href="{{ url_for('shop.search', q=query, min_price=2000) }}" class="text-sm text-decoration-none {% if request.args.get('min_price') == '2000' %}fw-bold text-dark{% else %}text-muted{% endif %}">Over ₹2,000</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- PRODUCT GRID -->
+        <div class="col-lg-9">
+            
+            {% if products %}
+            <!-- Sort Top Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <button class="btn btn-outline-dark d-lg-none rounded-pill text-sm fw-600 px-4"><i class="fas fa-filter me-2"></i>Filter</button>
+                <div class="d-none d-lg-block">
+                    <p class="text-sm text-muted mb-0">Showing <strong>{{ products|length }}</strong> results</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <label class="text-sm text-muted fw-600 d-none d-md-block">Sort by:</label>
+                    <select class="form-select bg-light border-0 rounded-pill shadow-none text-sm fw-600" style="width: 180px;">
+                        <option>Relevance</option>
+                        <option>Popularity</option>
+                        <option>New Arrivals</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% for product in products %}
+                <div class="col-6 col-md-4 col-xl-3">
+                    <div class="product-card">
+                        <div class="product-img-wrap">
+                            <button class="btn-wishlist" aria-label="Add to wishlist" data-product-id="{{ product.id }}">
+                                <i class="{% if product.id in wishlist_product_ids %}fas text-danger{% else %}far{% endif %} fa-heart"></i>
+                            </button>
+                            
+                            {% if product.stock <= 0 %}
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-3 rounded-pill px-2 py-1 shadow-sm">Sold Out</span>
+                            {% endif %}
+                            
+                            <a href="{{ url_for('shop.product_detail', product_id=product.id) }}">
+                                <img src="{{ product.image_url or 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=600&q=80' }}" alt="{{ product.name }}">
+                            </a>
+                            
+                            <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="w-100 quick-add-btn" {% if product.stock <= 0 %}disabled{% endif %}>
+                                    <i class="fas fa-shopping-bag me-1"></i> Quick Add
+                                </button>
+                            </form>
+                        </div>
+                        <div class="product-info">
+                            <a href="{{ url_for('shop.product_detail', product_id=product.id) }}" class="text-decoration-none">
+                                <h3 class="product-title">{{ product.name }}</h3>
+                            </a>
+                            <div class="product-category">{{ product.category.name if product.category else '' }}</div>
+                            
+                            <div class="d-flex align-items-center justify-content-between mt-auto">
+                                <div class="product-price">₹{{ product.price }}</div>
+                                <div class="text-warning text-xs">
+                                    {% if product.review_count > 0 %}
+                                        {% set rating = product.average_rating %}
+                                        {% for i in range(1, 6) %}
+                                            {% if rating >= i %}
+                                                <i class="fas fa-star"></i>
+                                            {% elif rating >= i - 0.5 %}
+                                                <i class="fas fa-star-half-alt"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="text-muted ms-1">({{ product.review_count }})</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- No Results -->
+            <div class="col-12 text-center py-5 my-5">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                    <i class="fas fa-search fs-1 text-muted"></i>
+                </div>
+                <h3 class="font-heading fw-bold mb-3">No matching results found</h3>
+                <p class="text-muted mb-4 fs-5" style="max-width: 400px; margin: 0 auto;">We couldn't find anything matching "{{ query }}". Try searching for different keywords.</p>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="{{ url_for('shop.index') }}" class="btn btn-primary rounded-pill px-5 py-2">Back to Home</a>
+                </div>
+            </div>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}

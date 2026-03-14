@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users — Admin{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb text-sm mb-1">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}" class="text-muted text-decoration-none hover-danger">Dashboard</a></li>
+                    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Users</li>
+                </ol>
+            </nav>
+            <h2 class="font-heading fw-bold mb-0">Registered Users</h2>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-dark rounded-pill px-4 shadow-sm text-sm fw-600">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </a>
+    </div>
+
+    <div class="card border-0 rounded-soft shadow-sm bg-white mb-5 border border-light">
+        <div class="card-header bg-white border-bottom border-light p-4 d-flex justify-content-between align-items-center">
+            <h5 class="font-heading fw-bold mb-0">User Directory</h5>
+            <div class="text-muted text-sm fw-600">{{ users|length }} Total Accounts</div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0 border-light">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th class="ps-4 py-3 text-uppercase text-xs fw-bold border-0">User</th>
+                        <th class="py-3 text-uppercase text-xs fw-bold border-0">Role</th>
+                        <th class="py-3 text-uppercase text-xs fw-bold border-0 text-center">Status</th>
+                        <th class="text-end pe-4 py-3 text-uppercase text-xs fw-bold border-0">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="border-bottom border-light">
+                        <td class="ps-4 py-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 45px; height: 45px; font-size: 1rem;">
+                                    {{ user.name[0]|upper if user.name else 'U' }}
+                                </div>
+                                <div>
+                                    <span class="fw-bold text-dark text-sm d-flex align-items-center gap-2">
+                                        {{ user.name or 'Unnamed User' }}
+                                        {% if user.id == current_user.id %}
+                                        <span class="badge bg-primary-bg text-primary" style="font-size: 0.6rem;">YOU</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="text-muted text-xs d-block">{{ user.email }}</span>
+                                    <span class="text-muted text-xs d-block">ID: #{{ user.id }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if user.is_admin %}
+                            <span class="badge bg-danger-bg text-danger rounded-pill px-3 py-1 fw-bold"><i class="fas fa-shield-alt me-1"></i> Administrator</span>
+                            {% else %}
+                            <span class="badge bg-light text-muted rounded-pill px-3 py-1 fw-bold"><i class="fas fa-user me-1"></i> Customer</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-success-bg text-success rounded-pill px-2 py-1 text-xs"><i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i> Active</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <form action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-light rounded-pill px-3 text-xs fw-bold" {% if user.id == current_user.id %}disabled{% endif %}>
+                                        {{ 'Demote' if user.is_admin else 'Make Admin' }}
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Permanently delete this user?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-light text-danger rounded-circle p-2 shadow-none" {% if user.id == current_user.id %}disabled{% endif %} title="Delete User">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
