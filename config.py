@@ -29,6 +29,11 @@ class Config:
     RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID')
     RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET')
     
+    # Supabase Storage
+    SUPABASE_URL = os.environ.get('SUPABASE_URL')
+    SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+    SUPABASE_BUCKET_NAME = os.environ.get('SUPABASE_BUCKET_NAME', 'product-images')
+    
     # Uploads
     # Uploads
     basedir = os.path.abspath(os.path.dirname(__file__))

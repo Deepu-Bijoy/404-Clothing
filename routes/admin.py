@@ -5,6 +5,7 @@ from extensions import db
 from sqlalchemy import func
 import os
 from werkzeug.utils import secure_filename
+from supabase_utils import upload_to_supabase, delete_from_supabase
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -111,17 +112,22 @@ def add_product():
             files = request.files.getlist('image_files')
             for file in files:
                 if file and file.filename:
-                    filename = secure_filename(file.filename)
-                    # Unique filename
-                    import uuid
-                    filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                    upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'products')
-                    if not os.path.exists(upload_dir):
-                        os.makedirs(upload_dir)
+                    # 1. Try Supabase Upload first
+                    supabase_url = upload_to_supabase(file, folder='products')
                     
-                    file.save(os.path.join(upload_dir, filename))
-                    # URL for the file
-                    image_urls.append(url_for('static', filename=f'uploads/products/{filename}'))
+                    if supabase_url:
+                        image_urls.append(supabase_url)
+                    else:
+                        # 2. Fallback to local if Supabase fails/not configured
+                        filename = secure_filename(file.filename)
+                        import uuid
+                        filename = f"{uuid.uuid4().hex[:8]}_{filename}"
+                        upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'products')
+                        if not os.path.exists(upload_dir):
+                            os.makedirs(upload_dir)
+                        
+                        file.save(os.path.join(upload_dir, filename))
+                        image_urls.append(url_for('static', filename=f'uploads/products/{filename}'))
         
         # First URL is the main image
         main_image_url = image_urls[0] if image_urls else None
@@ -154,13 +160,19 @@ def add_category():
         if 'category_image' in request.files:
             file = request.files['category_image']
             if file and file.filename:
-                filename = secure_filename(file.filename)
-                import uuid
-                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'categories')
-                os.makedirs(upload_dir, exist_ok=True)
-                file.save(os.path.join(upload_dir, filename))
-                image_url = url_for('static', filename=f'uploads/categories/{filename}')
+                # 1. Try Supabase
+                supabase_url = upload_to_supabase(file, folder='categories')
+                if supabase_url:
+                    image_url = supabase_url
+                else:
+                    # 2. Fallback
+                    filename = secure_filename(file.filename)
+                    import uuid
+                    filename = f"{uuid.uuid4().hex[:8]}_{filename}"
+                    upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'categories')
+                    os.makedirs(upload_dir, exist_ok=True)
+                    file.save(os.path.join(upload_dir, filename))
+                    image_url = url_for('static', filename=f'uploads/categories/{filename}')
 
         category = Category(name=name, slug=slug, image_url=image_url)
         db.session.add(category)
@@ -183,18 +195,27 @@ def edit_category(category_id):
         if file and file.filename:
             # Delete old image if it exists
             if category.image_url:
-                old_filename = category.image_url.split('/')[-1]
-                old_path = os.path.join(current_app.root_path, 'static', 'uploads', 'categories', old_filename)
-                if os.path.exists(old_path):
-                    os.remove(old_path)
+                if 'supabase.co' in category.image_url:
+                    delete_from_supabase(category.image_url)
+                else:
+                    old_filename = category.image_url.split('/')[-1]
+                    old_path = os.path.join(current_app.root_path, 'static', 'uploads', 'categories', old_filename)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
             
-            filename = secure_filename(file.filename)
-            import uuid
-            filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'categories')
-            os.makedirs(upload_dir, exist_ok=True)
-            file.save(os.path.join(upload_dir, filename))
-            category.image_url = url_for('static', filename=f'uploads/categories/{filename}')
+            # 1. Try Supabase
+            supabase_url = upload_to_supabase(file, folder='categories')
+            if supabase_url:
+                category.image_url = supabase_url
+            else:
+                # 2. Fallback
+                filename = secure_filename(file.filename)
+                import uuid
+                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
+                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'categories')
+                os.makedirs(upload_dir, exist_ok=True)
+                file.save(os.path.join(upload_dir, filename))
+                category.image_url = url_for('static', filename=f'uploads/categories/{filename}')
     
     db.session.commit()
     flash('Category updated', 'success')
@@ -207,52 +228,46 @@ def delete_category(category_id):
     category = db.get_or_404(Category, category_id)
     
     try:
-        # 1. Manually delete all product images from filesystem for products in this category
-        # SQLAlchemy handles the DB records, but we must handle the files.
+        # 1. DELETE PRODUCT IMAGES
         for product in category.products:
-            # Delete product's main image
             if product.image_url:
-                filename = product.image_url.split('/')[-1]
-                file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
-                old_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-                if os.path.exists(file_path):
-                    try: os.remove(file_path)
-                    except Exception: pass
-                elif os.path.exists(old_file_path):
-                    try: os.remove(old_file_path)
-                    except Exception: pass
-            
-            # Delete additional images
-            for p_img in product.images:
-                if p_img.image_url:
-                    filename = p_img.image_url.split('/')[-1]
+                if 'supabase.co' in product.image_url:
+                    delete_from_supabase(product.image_url)
+                else:
+                    filename = product.image_url.split('/')[-1]
                     file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
-                    old_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
                     if os.path.exists(file_path):
                         try: os.remove(file_path)
                         except Exception: pass
-                    elif os.path.exists(old_file_path):
-                        try: os.remove(old_file_path)
-                        except Exception: pass
+            
+            for p_img in product.images:
+                if p_img.image_url:
+                    if 'supabase.co' in p_img.image_url:
+                        delete_from_supabase(p_img.image_url)
+                    else:
+                        filename = p_img.image_url.split('/')[-1]
+                        file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
+                        if os.path.exists(file_path):
+                            try: os.remove(file_path)
+                            except Exception: pass
         
-        # 2. Delete category's own image file
+        # 2. DELETE CATEGORY IMAGE
         if category.image_url:
-            filename = category.image_url.split('/')[-1]
-            file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'categories', filename)
-            if os.path.exists(file_path):
-                try:
-                    os.remove(file_path)
-                except Exception:
-                    pass
+            if 'supabase.co' in category.image_url:
+                delete_from_supabase(category.image_url)
+            else:
+                filename = category.image_url.split('/')[-1]
+                file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'categories', filename)
+                if os.path.exists(file_path):
+                    try: os.remove(file_path)
+                    except Exception: pass
                 
-        # SQLAlchemy will handle deleting product records, product image records, and product review records 
-        # due to cascade="all, delete-orphan" in models.py
         db.session.delete(category)
         db.session.commit()
         flash('Category and all associated products and assets deleted.', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Error deleting category: {str(e)}. It may be linked to existing orders.', 'danger')
+        flash(f'Error deleting category: {str(e)}', 'danger')
         
     return redirect(url_for('admin.products'))
 
@@ -266,38 +281,33 @@ def delete_product(product_id):
          return redirect(url_for('admin.products'))
     
     try:
-        # 1. Delete associated image files
         if product.image_url:
-            filename = product.image_url.split('/')[-1]
-            file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
-            old_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            if os.path.exists(file_path):
-                try: os.remove(file_path)
-                except Exception: pass
-            elif os.path.exists(old_file_path):
-                try: os.remove(old_file_path)
-                except Exception: pass
-        
-        for p_img in product.images:
-            if p_img.image_url:
-                filename = p_img.image_url.split('/')[-1]
+            if 'supabase.co' in product.image_url:
+                delete_from_supabase(product.image_url)
+            else:
+                filename = product.image_url.split('/')[-1]
                 file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
-                old_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
                 if os.path.exists(file_path):
                     try: os.remove(file_path)
                     except Exception: pass
-                elif os.path.exists(old_file_path):
-                    try: os.remove(old_file_path)
-                    except Exception: pass
         
-        # 2. Delete the database record
-        # SQLAlchemy handles ProductImage and Review records via cascade delete
+        for p_img in product.images:
+            if p_img.image_url:
+                if 'supabase.co' in p_img.image_url:
+                    delete_from_supabase(p_img.image_url)
+                else:
+                    filename = p_img.image_url.split('/')[-1]
+                    file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
+                    if os.path.exists(file_path):
+                        try: os.remove(file_path)
+                        except Exception: pass
+        
         db.session.delete(product)
         db.session.commit()
         flash('Product and associated assets permanently deleted.', 'success')
     except Exception as e:
         db.session.rollback()
-        flash('Error deleting product. It may be linked to existing orders.', 'danger')
+        flash('Error deleting product.', 'danger')
     
     return redirect(url_for('admin.products'))
 
@@ -376,13 +386,19 @@ def add_banner():
     if 'banner_image' in request.files:
         file = request.files['banner_image']
         if file and file.filename:
-            filename = secure_filename(file.filename)
-            import uuid
-            filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'banners')
-            os.makedirs(upload_dir, exist_ok=True)
-            file.save(os.path.join(upload_dir, filename))
-            image_path = url_for('static', filename=f'uploads/banners/{filename}')
+            # 1. Try Supabase
+            supabase_url = upload_to_supabase(file, folder='banners')
+            if supabase_url:
+                image_path = supabase_url
+            else:
+                # 2. Fallback
+                filename = secure_filename(file.filename)
+                import uuid
+                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
+                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'banners')
+                os.makedirs(upload_dir, exist_ok=True)
+                file.save(os.path.join(upload_dir, filename))
+                image_path = url_for('static', filename=f'uploads/banners/{filename}')
     
     if image_path:
         banner = Banner(
@@ -418,21 +434,28 @@ def edit_banner(banner_id):
         if file and file.filename:
             # Delete old image if it exists
             if banner.image_path:
-                old_filename = banner.image_path.split('/')[-1]
-                old_path = os.path.join(current_app.root_path, 'static', 'uploads', 'banners', old_filename)
-                if os.path.exists(old_path):
-                    try:
-                        os.remove(old_path)
-                    except Exception:
-                        pass
+                if 'supabase.co' in banner.image_path:
+                    delete_from_supabase(banner.image_path)
+                else:
+                    old_filename = banner.image_path.split('/')[-1]
+                    old_path = os.path.join(current_app.root_path, 'static', 'uploads', 'banners', old_filename)
+                    if os.path.exists(old_path):
+                        try: os.remove(old_path)
+                        except Exception: pass
             
-            filename = secure_filename(file.filename)
-            import uuid
-            filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'banners')
-            os.makedirs(upload_dir, exist_ok=True)
-            file.save(os.path.join(upload_dir, filename))
-            banner.image_path = url_for('static', filename=f'uploads/banners/{filename}')
+            # 1. Try Supabase
+            supabase_url = upload_to_supabase(file, folder='banners')
+            if supabase_url:
+                banner.image_path = supabase_url
+            else:
+                # 2. Fallback
+                filename = secure_filename(file.filename)
+                import uuid
+                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
+                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'banners')
+                os.makedirs(upload_dir, exist_ok=True)
+                file.save(os.path.join(upload_dir, filename))
+                banner.image_path = url_for('static', filename=f'uploads/banners/{filename}')
             
     db.session.commit()
     flash('Banner updated.', 'success')
@@ -446,13 +469,14 @@ def delete_banner(banner_id):
     
     # Delete image file
     if banner.image_path:
-        filename = banner.image_path.split('/')[-1]
-        file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'banners', filename)
-        if os.path.exists(file_path):
-            try:
-                os.remove(file_path)
-            except Exception:
-                pass
+        if 'supabase.co' in banner.image_path:
+            delete_from_supabase(banner.image_path)
+        else:
+            filename = banner.image_path.split('/')[-1]
+            file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'banners', filename)
+            if os.path.exists(file_path):
+                try: os.remove(file_path)
+                except Exception: pass
                 
     db.session.delete(banner)
     db.session.commit()
@@ -478,14 +502,20 @@ def edit_product(product_id):
         new_images = []
         for file in files:
             if file and file.filename:
-                filename = secure_filename(file.filename)
-                import uuid
-                filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'products')
-                os.makedirs(upload_dir, exist_ok=True)
-                file.save(os.path.join(upload_dir, filename))
-                image_url = url_for('static', filename=f'uploads/products/{filename}')
-                new_images.append(image_url)
+                # 1. Try Supabase
+                supabase_url = upload_to_supabase(file, folder='products')
+                if supabase_url:
+                    new_images.append(supabase_url)
+                else:
+                    # 2. Fallback
+                    filename = secure_filename(file.filename)
+                    import uuid
+                    filename = f"{uuid.uuid4().hex[:8]}_{filename}"
+                    upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'products')
+                    os.makedirs(upload_dir, exist_ok=True)
+                    file.save(os.path.join(upload_dir, filename))
+                    image_url = url_for('static', filename=f'uploads/products/{filename}')
+                    new_images.append(image_url)
         
         if new_images:
             from models import ProductImage
@@ -509,14 +539,16 @@ def delete_product_image(image_id):
     image = db.get_or_404(ProductImage, image_id)
     product_id = image.product_id
     
-    # Delete file from filesystem
-    filename = image.image_url.split('/')[-1]
-    file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
-    if os.path.exists(file_path):
-        try:
-            os.remove(file_path)
-        except Exception:
-            pass
+    # Delete file from filesystem or Supabase
+    if image.image_url:
+        if 'supabase.co' in image.image_url:
+            delete_from_supabase(image.image_url)
+        else:
+            filename = image.image_url.split('/')[-1]
+            file_path = os.path.join(current_app.root_path, 'static', 'uploads', 'products', filename)
+            if os.path.exists(file_path):
+                try: os.remove(file_path)
+                except Exception: pass
             
     # If this was the product's main image, update Product.image_url
     product = Product.query.get(product_id)
