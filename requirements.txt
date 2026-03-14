@@ -1,17 +1,20 @@
-Flask==3.0.0
+# Production requirements for 404Clothing
+# Fixed to stable versions for Python 3.11 compatibility
+Flask==3.0.2
 Flask-SQLAlchemy==3.1.1
 Flask-Login==0.6.3
 Flask-WTF==1.2.1
 Flask-Mail==0.9.1
 itsdangerous==2.1.2
 Werkzeug==3.0.1
-supabase==2.3.0
-python-dotenv==1.0.0
+supabase==2.4.0
+python-dotenv==1.0.1
 gunicorn==21.2.0
-psycopg2-binary==2.9.9
-WTForms==3.1.1
+psycopg2-binary>=2.9.9
+WTForms==3.1.2
 SQLAlchemy>=2.0.25
-email-validator==2.1.0.post1
+email-validator==2.1.1
 bcrypt==4.1.2
 requests==2.31.0
-typing-extensions>=4.9.0
+typing-extensions>=4.10.0
+# Cache breaker: 2026-03-15-0153
