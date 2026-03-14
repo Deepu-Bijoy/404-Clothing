@@ -48,55 +48,10 @@ with app.app_context():
                 except Exception:
                     # Likely already migrated or not Postgres
                     pass
-
-            # Auto-promote your account to admin
-            conn.execute(text('UPDATE "user" SET is_admin = true WHERE email = :email'), {"email": "deepubijoy@gmail.com"})
-            
-            # Auto-populate banners if empty or pointing to old Professional/Unsplash URLs
-            banner_count = conn.execute(text('SELECT COUNT(*) FROM banner')).scalar()
-            
-            # Check if we need to refresh (e.g. if pointing to old Professional or Unsplash URLs)
-            first_banner = conn.execute(text('SELECT image_path FROM banner LIMIT 1')).fetchone()
-            if first_banner and ('unsplash' in (first_banner[0] or '') or 'professional' in (first_banner[0] or '')):
-                conn.execute(text('DELETE FROM banner'))
-                banner_count = 0
-
-            if banner_count == 0:
-                banners = [
-                    {
-                        "image_path": "/static/img/banners/mens_banner_1.png",
-                        "title": "CORE<br>COLLECTION",
-                        "subtitle": "Timeless styles for every closet.",
-                        "button_text": "SHOP NOW",
-                        "button_link": "/#collection",
-                        "display_order": 1
-                    },
-                    {
-                        "image_path": "/static/img/banners/mens_banner_2.png",
-                        "title": "URBAN<br>COLLECTION",
-                        "subtitle": "Define your street signature.",
-                        "button_text": "EXPLORE",
-                        "button_link": "/#collection",
-                        "display_order": 2
-                    },
-                    {
-                        "image_path": "/static/img/banners/mens_banner_3.png",
-                        "title": "PREMIUM<br>ESSENTIALS",
-                        "subtitle": "Quality streetwear for the modern man.",
-                        "button_text": "VIEW ALL",
-                        "button_link": "/#collection",
-                        "display_order": 3
-                    }
-                ]
-                for b in banners:
-                    conn.execute(text("""
-                        INSERT INTO banner (image_path, title, subtitle, button_text, button_link, display_order, is_active, created_at)
-                        VALUES (:image_path, :title, :subtitle, :button_text, :button_link, :display_order, true, NOW())
-                    """), b)
             
             conn.commit()
     except Exception as e:
-        print(f"Migration/Startup check info: {e}")
+        # Silencing startup errors for local SQLite dev
         pass
 
 @login_manager.user_loader
