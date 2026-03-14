@@ -17,6 +17,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 db.init_app(app)
 login_manager.init_app(app)
 csrf.init_app(app)
+from extensions import mail
+mail.init_app(app)
 
 # Register Blueprints
 from routes.auth import auth_bp

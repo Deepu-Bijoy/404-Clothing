@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Reset Password — 404Clothing{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 px-lg-5 py-5 my-md-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-7 col-lg-5 col-xl-4">
+            <div class="card auth-card text-center mb-5">
+                <div class="mb-4">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3">
+                        <i class="fas fa-key text-dark" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="font-heading fw-bold mb-2">Reset Password</h2>
+                    <p class="text-muted text-sm">Enter your email to receive a reset link</p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4 text-start">
+                        {{ form.email.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control bg-light is-invalid", placeholder="name@example.com") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.email.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control bg-light", placeholder="name@example.com") }}
+                        {% endif %}
+                    </div>
+                    
+                    {{ form.submit(class="btn btn-primary w-100 py-3 rounded-pill fw-bold text-uppercase shadow-soft", style="letter-spacing: 1px;") }}
+                    
+                    <p class="text-center text-muted text-sm mt-4">
+                        Remember your password? 
+                        <a href="{{ url_for('auth.login') }}" class="text-danger fw-bold text-decoration-none ms-1">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

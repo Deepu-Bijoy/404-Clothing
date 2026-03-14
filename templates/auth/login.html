@@ -31,7 +31,7 @@
                     <div class="mb-4 text-start">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             {{ form.password.label(class="form-label fw-600 text-sm mb-0 text-dark") }}
-                            <a href="#" class="text-muted text-xs text-decoration-underline" style="text-underline-offset: 4px;">Forgot password?</a>
+                            <a href="{{ url_for('auth.reset_request') }}" class="text-muted text-xs text-decoration-underline" style="text-underline-offset: 4px;">Forgot password?</a>
                         </div>
                         {% if form.password.errors %}
                             {{ form.password(class="form-control bg-light is-invalid", placeholder="••••••••") }}
