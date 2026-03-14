@@ -73,6 +73,17 @@ def dashboard():
         ).scalar() or 0
         top_seller_rating = round(float(top_seller_rating), 1)
 
+    # Storage Check
+    from supabase_utils import get_supabase_client
+    supabase_configured = False
+    try:
+        sb_client = get_supabase_client()
+        if sb_client:
+            # Ping bucket (optional but good)
+            supabase_configured = True
+    except Exception:
+        pass
+
     return render_template('admin/dashboard.html', 
                            products_count=products_count, 
                            orders_count=orders_count, 
@@ -83,7 +94,8 @@ def dashboard():
                            top_seller=top_seller,
                            top_sales_count=max_sales,
                            top_seller_revenue=top_seller_revenue,
-                           top_seller_rating=top_seller_rating)
+                           top_seller_rating=top_seller_rating,
+                           storage_status=supabase_configured)
 
 @admin_bp.route('/products')
 @login_required
