@@ -60,10 +60,20 @@
                             {% endif %}
                         </td>
                         <td class="text-center">
+                            {% if user.is_active %}
                             <span class="badge bg-success-bg text-success rounded-pill px-2 py-1 text-xs"><i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i> Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-muted rounded-pill px-2 py-1 text-xs"><i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i> Inactive</span>
+                            {% endif %}
                         </td>
                         <td class="text-end pe-4">
                             <div class="d-flex justify-content-end gap-2">
+                                <form action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-light rounded-pill px-3 text-xs fw-bold" {% if user.id == current_user.id %}disabled{% endif %}>
+                                        {{ 'Suspend' if user.is_active else 'Activate' }}
+                                    </button>
+                                </form>
                                 <form action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" method="POST">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="btn btn-sm btn-light rounded-pill px-3 text-xs fw-bold" {% if user.id == current_user.id %}disabled{% endif %}>

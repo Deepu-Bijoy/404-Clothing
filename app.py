@@ -48,7 +48,13 @@ with app.app_context():
                     conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
                     conn.commit()
                 except Exception:
-                    # Likely already migrated or not Postgres
+                    pass
+                
+                # New Migration for is_active
+                try:
+                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE'))
+                    conn.commit()
+                except Exception:
                     pass
             
             conn.commit()

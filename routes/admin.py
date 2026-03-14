@@ -573,3 +573,19 @@ def delete_product_image(image_id):
     db.session.commit()
     flash('Image removed from gallery.', 'success')
     return redirect(url_for('admin.products'))
+
+@admin_bp.route('/user/toggle-status/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def toggle_user_status(user_id):
+    user = db.get_or_404(User, user_id)
+    if user.id == current_user.id:
+        flash('You cannot suspend yourself!', 'danger')
+        return redirect(url_for('admin.users'))
+    
+    user.is_active = not user.is_active
+    db.session.commit()
+    
+    action = 'activated' if user.is_active else 'suspended'
+    flash(f'User {user.name} has been {action}.', 'success')
+    return redirect(url_for('admin.users'))
