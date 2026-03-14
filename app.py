@@ -35,11 +35,15 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 # Create Database Tables if not exist
 with app.app_context():
     db.create_all()
-    # Migrate password_hash column from VARCHAR(128) to TEXT if needed
+    # Migrate database if needed
     try:
         from sqlalchemy import text
         with db.engine.connect() as conn:
-            conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
+            # PostgreSQL specific migration
+            if "postgresql" in str(db.engine.url):
+                conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
+                conn.commit()
+
             # Auto-promote your account to admin
             conn.execute(text('UPDATE "user" SET is_admin = true WHERE email = :email'), {"email": "deepubijoy@gmail.com"})
             
@@ -87,8 +91,8 @@ with app.app_context():
             
             conn.commit()
     except Exception as e:
-        print(f"Migration error: {e}")
-        pass  # Already updated or table doesn't exist yet
+        print(f"Migration/Startup check info: {e}")
+        pass
 
 @login_manager.user_loader
 def load_user(user_id):
