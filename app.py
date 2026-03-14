@@ -56,8 +56,9 @@ def create_app(config_class=Config):
 
     return app
 
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     # Only enable debug if explicitly set or in development
     is_debug = os.environ.get('FLASK_DEBUG', '0') == '1'
     app.run(debug=is_debug)
