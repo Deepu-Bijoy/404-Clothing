@@ -16,4 +16,5 @@ bcrypt==4.1.2
 requests==2.31.0
 typing-extensions>=4.10.0
 razorpay==1.4.1
-# Cache breaker: 2026-03-15-0158
+setuptools
+# Cache breaker: 2026-03-15-0201
