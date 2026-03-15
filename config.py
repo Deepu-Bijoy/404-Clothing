@@ -21,6 +21,9 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
         "pool_recycle": 300,
+        "pool_size": 10,
+        "max_overflow": 20,
+        "connect_args": {"sslmode": "require"} if database_url and "postgresql" in database_url else {}
     }
     
     # Security Headers & CSRF
