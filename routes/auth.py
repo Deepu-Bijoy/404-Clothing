@@ -83,7 +83,6 @@ def reset_request():
                 flash('Password reset link sent to your email', 'info')
                 return redirect(url_for('auth.login'))
             else:
-                # Still show a message but don't show the link on screen
                 flash('Password reset link sent to your email', 'info')
                 return redirect(url_for('auth.login'))
         else:
