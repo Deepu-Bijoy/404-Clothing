@@ -58,3 +58,4 @@ class Config:
     MAIL_USERNAME = os.environ.get('EMAIL_USER') or os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD') or os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or MAIL_USERNAME
+    MAIL_DEBUG = True  # Keep debug enabled for troubleshooting

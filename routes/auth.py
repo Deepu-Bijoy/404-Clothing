@@ -56,33 +56,28 @@ import time
 def send_async_email(app, msg):
     """
     Background worker to send email with retry logic and detailed logging.
-    Ensures that SMTP failures do not block the main application thread.
     """
     with app.app_context():
         max_retries = 3
-        retry_delay = 5  # seconds
+        retry_delay = 5
         
         for attempt in range(max_retries):
             try:
-                print(f"DEBUG: SMTP START: Attempt {attempt + 1} for {msg.recipients}")
-                server = app.config.get('MAIL_SERVER')
-                port = app.config.get('MAIL_PORT')
-                use_tls = app.config.get('MAIL_USE_TLS')
-                use_ssl = app.config.get('MAIL_USE_SSL')
-                print(f"DEBUG: SMTP CONFIG: Server={server}, Port={port}, TLS={use_tls}, SSL={use_ssl}")
-                
-                # Verify SMTP Connection & Send
+                print(f"DEBUG: SMTP ATTEMPT {attempt + 1}: Starting send...")
+                # We can't easily change timeout here without monkeypatching, 
+                # but MAIL_DEBUG will show us exactly where it sits.
                 mail.send(msg)
-                
-                print(f"DEBUG: SMTP SUCCESS: Email successfully sent to {msg.recipients}")
+                print(f"DEBUG: SMTP SUCCESS: Email delivered to {msg.recipients}")
                 return True
             except Exception as e:
-                print(f"DEBUG: SMTP ERROR: FAILED on attempt {attempt + 1}. Error: {str(e)}")
+                print(f"DEBUG: SMTP ERROR on attempt {attempt + 1}: {str(e)}")
+                if "Network is unreachable" in str(e) or "Timeout" in str(e):
+                    print("DEBUG: SMTP RETRY: Network looks unstable, waiting...")
+                
                 if attempt < max_retries - 1:
-                    print(f"DEBUG: SMTP RETRY: Retrying in {retry_delay} seconds...")
                     time.sleep(retry_delay)
                 else:
-                    print(f"DEBUG: SMTP FATAL: All {max_retries} attempts failed for {msg.recipients}")
+                    print(f"DEBUG: SMTP FATAL: Permanent failure after {max_retries} tries.")
         return False
 
 def send_reset_email(user):
