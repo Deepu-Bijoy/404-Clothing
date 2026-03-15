@@ -21,8 +21,9 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
         "pool_recycle": 280,
-        "pool_size": 5,      # Lowered for memory safety on Render
-        "max_overflow": 10,  # Lowered for memory safety on Render
+        "pool_size": 3,      # Minimized for memory safety
+        "max_overflow": 5,   # Minimized for memory safety
+        "pool_timeout": 30,
         "pool_use_lifo": True,
         "connect_args": {"sslmode": "require"} if database_url and "postgresql" in database_url else {}
     }

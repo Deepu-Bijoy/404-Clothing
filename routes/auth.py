@@ -4,6 +4,7 @@ from forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordFo
 from models import User
 from extensions import db, mail
 from flask_mail import Message
+from threading import Thread
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -50,6 +51,15 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('shop.index'))
 
+def send_async_email(app, msg):
+    with app.app_context():
+        try:
+            print(f"DEBUG: Background thread: Attempting to send email...")
+            mail.send(msg)
+            print("DEBUG: Background thread: Email sent successfully!")
+        except Exception as e:
+            print(f"DEBUG: Background thread: FAILED to send email: {e}")
+
 def send_reset_email(user):
     print(f"DEBUG: Preparing email for {user.email}")
     token = user.get_reset_token()
@@ -62,15 +72,10 @@ def send_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    print(f"DEBUG: Attempting to send via {current_app.config.get('MAIL_SERVER')}:{current_app.config.get('MAIL_PORT')}")
-    try:
-        mail.send(msg)
-        print("DEBUG: mail.send(msg) finished successfully")
-        return True
-    except Exception as e:
-        print(f"DEBUG: mail.send(msg) FAILED: {e}")
-        print(f"RESET LINK (FOR DEBUGGING): {reset_url}")
-        return False
+    print(f"DEBUG: Initiating background thread for email sending...")
+    # Use _get_current_object() to get the actual app instance instead of the proxy
+    Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
+    return True
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
