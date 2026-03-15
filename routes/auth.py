@@ -54,11 +54,14 @@ def logout():
 def send_async_email(app, msg):
     with app.app_context():
         try:
-            print(f"DEBUG: Background thread: Attempting to send email...")
+            print(f"DEBUG: Background thread: STARTING send for {msg.recipients}")
+            print(f"DEBUG: Background thread: Using server {app.config.get('MAIL_SERVER')}:{app.config.get('MAIL_PORT')}")
             mail.send(msg)
-            print("DEBUG: Background thread: Email sent successfully!")
+            print("DEBUG: Background thread: SUCCESS! Email sent.")
         except Exception as e:
-            print(f"DEBUG: Background thread: FAILED to send email: {e}")
+            print(f"DEBUG: Background thread: FAILED. Error: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
 def send_reset_email(user):
     print(f"DEBUG: Preparing email for {user.email}")
