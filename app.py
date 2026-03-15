@@ -1,4 +1,4 @@
-# last deploy sync: 2026-03-14 21:03
+# last deploy sync: 2026-03-15 15:35
 import os
 from flask import Flask, render_template
 from config import Config
@@ -55,6 +55,10 @@ with app.app_context():
     except Exception as e:
         # Silencing startup errors for local SQLite dev
         pass
+    
+    # CRITICAL: Dispose of the engine to close startup connections
+    # This prevents the "SSL error: decryption failed" error in workers
+    db.engine.dispose()
 
 @login_manager.user_loader
 def load_user(user_id):

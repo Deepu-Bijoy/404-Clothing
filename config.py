@@ -20,9 +20,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
-        "pool_recycle": 300,
-        "pool_size": 10,
-        "max_overflow": 20,
+        "pool_recycle": 280,
+        "pool_size": 5,      # Lowered for memory safety on Render
+        "max_overflow": 10,  # Lowered for memory safety on Render
+        "pool_use_lifo": True,
         "connect_args": {"sslmode": "require"} if database_url and "postgresql" in database_url else {}
     }
     
