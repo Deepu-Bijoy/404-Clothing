@@ -78,10 +78,14 @@ def send_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    print(f"DEBUG: Initiating background thread for email sending...")
-    # Use _get_current_object() to get the actual app instance instead of the proxy
-    Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
-    return True
+    print(f"DEBUG: DIRECT SEND: Using server {current_app.config.get('MAIL_SERVER')}:{current_app.config.get('MAIL_PORT')}")
+    try:
+        mail.send(msg)
+        print("DEBUG: DIRECT SEND: SUCCESS!")
+        return True
+    except Exception as e:
+        print(f"DEBUG: DIRECT SEND: FAILED. Error: {str(e)}")
+        return False
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
