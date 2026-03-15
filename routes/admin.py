@@ -470,20 +470,12 @@ def edit_product(product_id):
         new_images = []
         for file in files:
             if file and file.filename:
-                # 1. Try Supabase
+                # Enforce Supabase Upload
                 supabase_url = upload_to_supabase(file, folder='products')
                 if supabase_url:
                     new_images.append(supabase_url)
                 else:
-                    # 2. Fallback
-                    filename = secure_filename(file.filename)
-                    import uuid
-                    filename = f"{uuid.uuid4().hex[:8]}_{filename}"
-                    upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'products')
-                    os.makedirs(upload_dir, exist_ok=True)
-                    file.save(os.path.join(upload_dir, filename))
-                    image_url = url_for('static', filename=f'uploads/products/{filename}')
-                    new_images.append(image_url)
+                    flash(f"Failed to upload {file.filename} to Supabase.", 'danger')
         
         if new_images:
             from models import ProductImage

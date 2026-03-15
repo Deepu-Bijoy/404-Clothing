@@ -49,11 +49,12 @@ class Config:
     UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16MB Max
 
-    # Mail Configuration
+    # Mail Configuration (Gmail SMTP)
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True').lower() in ['true', 'on', '1']
     MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'False').lower() in ['true', 'on', '1']
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', MAIL_USERNAME)
+    # Prioritize EMAIL_USER/PASSWORD as requested, fallback to MAIL_ names
+    MAIL_USERNAME = os.environ.get('EMAIL_USER') or os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD') or os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or MAIL_USERNAME

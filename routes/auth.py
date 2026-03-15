@@ -51,23 +51,45 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('shop.index'))
 
+import time
+
 def send_async_email(app, msg):
+    """
+    Background worker to send email with retry logic and detailed logging.
+    Ensures that SMTP failures do not block the main application thread.
+    """
     with app.app_context():
-        try:
-            print(f"DEBUG: Background thread: STARTING send for {msg.recipients}")
-            server = app.config.get('MAIL_SERVER')
-            port = app.config.get('MAIL_PORT')
-            use_tls = app.config.get('MAIL_USE_TLS')
-            use_ssl = app.config.get('MAIL_USE_SSL')
-            print(f"DEBUG: Background thread: Server={server}, Port={port}, TLS={use_tls}, SSL={use_ssl}")
-            mail.send(msg)
-            print("DEBUG: Background thread: SUCCESS! Email sent.")
-        except Exception as e:
-            print(f"DEBUG: Background thread: FAILED. Error: {str(e)}")
-            # Log the specific error type to help identify if it's a port block
+        max_retries = 3
+        retry_delay = 5  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                print(f"DEBUG: SMTP START: Attempt {attempt + 1} for {msg.recipients}")
+                server = app.config.get('MAIL_SERVER')
+                port = app.config.get('MAIL_PORT')
+                use_tls = app.config.get('MAIL_USE_TLS')
+                use_ssl = app.config.get('MAIL_USE_SSL')
+                print(f"DEBUG: SMTP CONFIG: Server={server}, Port={port}, TLS={use_tls}, SSL={use_ssl}")
+                
+                # Verify SMTP Connection & Send
+                mail.send(msg)
+                
+                print(f"DEBUG: SMTP SUCCESS: Email successfully sent to {msg.recipients}")
+                return True
+            except Exception as e:
+                print(f"DEBUG: SMTP ERROR: FAILED on attempt {attempt + 1}. Error: {str(e)}")
+                if attempt < max_retries - 1:
+                    print(f"DEBUG: SMTP RETRY: Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                else:
+                    print(f"DEBUG: SMTP FATAL: All {max_retries} attempts failed for {msg.recipients}")
+        return False
 
 def send_reset_email(user):
-    print(f"DEBUG: Preparing email for {user.email}")
+    """
+    Generates reset link and offloads email sending to a background thread.
+    """
+    print(f"DEBUG: Preparing reset email for {user.email}")
     token = user.get_reset_token()
     reset_url = url_for('auth.reset_token', token=token, _external=True)
     msg = Message('Password Reset Request',
@@ -78,14 +100,10 @@ def send_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    print(f"DEBUG: DIRECT SEND: Using server {current_app.config.get('MAIL_SERVER')}:{current_app.config.get('MAIL_PORT')}")
-    try:
-        mail.send(msg)
-        print("DEBUG: DIRECT SEND: SUCCESS!")
-        return True
-    except Exception as e:
-        print(f"DEBUG: DIRECT SEND: FAILED. Error: {str(e)}")
-        return False
+    print(f"DEBUG: Offloading email to background thread...")
+    # Get the real app object from the proxy to pass to the thread
+    Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
+    return True
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():

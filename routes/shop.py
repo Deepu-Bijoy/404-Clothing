@@ -47,25 +47,21 @@ def product_detail(product_id):
         db.session.add(review)
         db.session.flush() # Get review.id
         
-        # Handle Images
+        # Handle Images (Supabase)
         files = request.files.getlist(form.photos.name)
         if files:
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'reviews')
-            os.makedirs(upload_dir, exist_ok=True)
-            
+            from supabase_utils import upload_to_supabase
             for file in files:
                 if file and file.filename:
-                    filename = secure_filename(file.filename)
-                    # Unique filename
-                    import uuid
-                    unique_filename = f"{uuid.uuid4().hex}_{filename}"
-                    file.save(os.path.join(upload_dir, unique_filename))
-                    
-                    review_image = ReviewImage(
-                        review_id=review.id,
-                        image_url=f"/static/uploads/reviews/{unique_filename}"
-                    )
-                    db.session.add(review_image)
+                    supabase_url = upload_to_supabase(file, folder='reviews')
+                    if supabase_url:
+                        review_image = ReviewImage(
+                            review_id=review.id,
+                            image_url=supabase_url
+                        )
+                        db.session.add(review_image)
+                    else:
+                        flash(f"Failed to upload {file.filename} to Supabase.", 'warning')
         
         db.session.commit()
         flash('Review submitted successfully!', 'success')
