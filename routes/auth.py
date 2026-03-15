@@ -55,13 +55,16 @@ def send_async_email(app, msg):
     with app.app_context():
         try:
             print(f"DEBUG: Background thread: STARTING send for {msg.recipients}")
-            print(f"DEBUG: Background thread: Using server {app.config.get('MAIL_SERVER')}:{app.config.get('MAIL_PORT')}")
+            server = app.config.get('MAIL_SERVER')
+            port = app.config.get('MAIL_PORT')
+            use_tls = app.config.get('MAIL_USE_TLS')
+            use_ssl = app.config.get('MAIL_USE_SSL')
+            print(f"DEBUG: Background thread: Server={server}, Port={port}, TLS={use_tls}, SSL={use_ssl}")
             mail.send(msg)
             print("DEBUG: Background thread: SUCCESS! Email sent.")
         except Exception as e:
             print(f"DEBUG: Background thread: FAILED. Error: {str(e)}")
-            import traceback
-            traceback.print_exc()
+            # Log the specific error type to help identify if it's a port block
 
 def send_reset_email(user):
     print(f"DEBUG: Preparing email for {user.email}")
