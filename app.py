@@ -17,8 +17,6 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 db.init_app(app)
 login_manager.init_app(app)
 csrf.init_app(app)
-from extensions import mail
-mail.init_app(app)
 
 # Register Blueprints
 from routes.auth import auth_bp
@@ -42,13 +40,20 @@ with app.app_context():
     try:
         from sqlalchemy import text
         with db.engine.connect() as conn:
-            # PostgreSQL specific migration - strictly check if we are on Postgres
+            # 1. Postgres specific (hash type update)
             if 'postgresql' in str(db.engine.url).lower():
                 try:
                     conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
                     conn.commit()
+                except Exception: pass
+
+            # 2. General migration for new columns (SQLite & Postgres)
+            for column, col_type in [('security_question', 'VARCHAR(200)'), ('security_answer_hash', 'VARCHAR(128)')]:
+                try:
+                    conn.execute(text(f'ALTER TABLE "user" ADD COLUMN {column} {col_type}'))
+                    conn.commit()
                 except Exception:
-                    # Likely already migrated or not Postgres
+                    # Column likely already exists
                     pass
             
             conn.commit()

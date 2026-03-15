@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Verify Identity</h2>
+                    <p class="text-muted text-center mb-4">Answer your security question to continue.</p>
+                    
+                    <div class="alert alert-info py-3 mb-4">
+                        <strong>Question:</strong> {{ question }}
+                    </div>
+
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.answer.label(class="form-label") }}
+                            {% if form.answer.errors %}
+                                {{ form.answer(class="form-control is-invalid", placeholder="Enter your answer") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.answer.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.answer(class="form-control", placeholder="Enter your answer") }}
+                            {% endif %}
+                        </div>
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-dark btn-lg") }}
+                        </div>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <small class="text-muted text-decoration-none">
+                            Back to <a href="{{ url_for('auth.login') }}" class="text-dark">Login</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -2,9 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, login_required, current_user
 from forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm
 from models import User
-from extensions import db, mail
-from flask_mail import Message
-from threading import Thread
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -15,8 +13,13 @@ def register():
     
     form = RegistrationForm()
     if form.validate_on_submit():
-        new_user = User(name=form.name.data, email=form.email.data)
+        new_user = User(
+            name=form.name.data, 
+            email=form.email.data,
+            security_question=form.security_question.data
+        )
         new_user.set_password(form.password.data)
+        new_user.set_security_answer(form.security_answer.data)
         db.session.add(new_user)
         db.session.commit()
         
@@ -53,52 +56,7 @@ def logout():
 
 import time
 
-def send_async_email(app, msg):
-    """
-    Background worker to send email with retry logic and detailed logging.
-    """
-    with app.app_context():
-        max_retries = 3
-        retry_delay = 5
-        
-        for attempt in range(max_retries):
-            try:
-                print(f"DEBUG: SMTP ATTEMPT {attempt + 1}: Starting send...")
-                # We can't easily change timeout here without monkeypatching, 
-                # but MAIL_DEBUG will show us exactly where it sits.
-                mail.send(msg)
-                print(f"DEBUG: SMTP SUCCESS: Email delivered to {msg.recipients}")
-                return True
-            except Exception as e:
-                print(f"DEBUG: SMTP ERROR on attempt {attempt + 1}: {str(e)}")
-                if "Network is unreachable" in str(e) or "Timeout" in str(e):
-                    print("DEBUG: SMTP RETRY: Network looks unstable, waiting...")
-                
-                if attempt < max_retries - 1:
-                    time.sleep(retry_delay)
-                else:
-                    print(f"DEBUG: SMTP FATAL: Permanent failure after {max_retries} tries.")
-        return False
-
-def send_reset_email(user):
-    """
-    Generates reset link and offloads email sending to a background thread.
-    """
-    print(f"DEBUG: Preparing reset email for {user.email}")
-    token = user.get_reset_token()
-    reset_url = url_for('auth.reset_token', token=token, _external=True)
-    msg = Message('Password Reset Request',
-                  sender=current_app.config.get('MAIL_DEFAULT_SENDER', 'noreply@404clothing.com'),
-                  recipients=[user.email])
-    msg.body = f'''To reset your password, visit the following link:
-{reset_url}
-
-If you did not make this request then simply ignore this email and no changes will be made.
-'''
-    print(f"DEBUG: Offloading email to background thread...")
-    # Get the real app object from the proxy to pass to the thread
-    Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
-    return True
+from forms import SecurityAnswerForm
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
@@ -106,28 +64,39 @@ def reset_request():
         return redirect(url_for('shop.index'))
     form = RequestResetForm()
     if form.validate_on_submit():
-        print(f"DEBUG: Processing reset request for {form.email.data}")
-        try:
-            user = User.query.filter_by(email=form.email.data).first()
-            print(f"DEBUG: User lookup finished. Found user: {user is not None}")
-            if user:
-                token = user.get_reset_token()
-                print("DEBUG: Token generated.")
-                if send_reset_email(user):
-                    print("DEBUG: send_reset_email returned True")
-                    flash('Password reset link sent to your email', 'info')
-                else:
-                    print("DEBUG: send_reset_email returned False")
-                    flash('Password reset link sent to your email', 'info')
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            if not user.security_question:
+                flash('Your account does not have a security question set. Please contact support.', 'danger')
                 return redirect(url_for('auth.login'))
-            else:
-                print("DEBUG: No user found, redirecting...")
-                flash('Password reset link sent to your email', 'info')
-                return redirect(url_for('auth.login'))
-        except Exception as e:
-            print(f"DEBUG: CRASH in reset_request: {e}")
-            raise e
+            return redirect(url_for('auth.reset_verify', email=user.email))
+        else:
+            flash('There is no account with that email.', 'danger')
     return render_template('auth/reset_request.html', title='Reset Password', form=form)
+
+@auth_bp.route("/reset_verify", methods=['GET', 'POST'])
+def reset_verify():
+    if current_user.is_authenticated:
+        return redirect(url_for('shop.index'))
+    email = request.args.get('email')
+    if not email:
+        return redirect(url_for('auth.reset_request'))
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return redirect(url_for('auth.reset_request'))
+    
+    form = SecurityAnswerForm()
+    if form.validate_on_submit():
+        if user.check_security_answer(form.answer.data):
+            # Generate a temporary token for the reset page
+            token = user.get_reset_token()
+            return redirect(url_for('auth.reset_token', token=token))
+        else:
+            flash('Incorrect answer. Please try again.', 'danger')
+            
+    return render_template('auth/reset_verify.html', title='Verify Security Question', 
+                           form=form, question=user.security_question)
 
 @auth_bp.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):

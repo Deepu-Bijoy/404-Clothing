@@ -65,6 +65,30 @@
                     </div>
 
                     <div class="mb-4 text-start">
+                        {{ form.security_question.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.security_question.errors %}
+                            {{ form.security_question(class="form-select bg-light is-invalid") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.security_question.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.security_question(class="form-select bg-light") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        {{ form.security_answer.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.security_answer.errors %}
+                            {{ form.security_answer(class="form-control bg-light is-invalid", placeholder="Your Answer") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.security_answer.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.security_answer(class="form-control bg-light", placeholder="Your Answer") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
                         <p class="text-xs text-muted mb-0">By creating an account, you agree to our <a href="#" class="text-dark text-decoration-underline">Terms of Service</a> and <a href="#" class="text-dark text-decoration-underline">Privacy Policy</a>.</p>
                     </div>
                     

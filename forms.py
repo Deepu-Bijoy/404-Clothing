@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from models import User
 
@@ -9,6 +9,14 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    security_question = SelectField('Security Question', choices=[
+        ('What was your first pet?', 'What was your first pet?'),
+        ('What was the name of your elementary school?', 'What was the name of your elementary school?'),
+        ('In what city were you born?', 'In what city were you born?'),
+        ('What is your favorite movie?', 'What is your favorite movie?'),
+        ('What was the make of your first car?', 'What was the make of your first car?')
+    ], validators=[DataRequired()])
+    security_answer = StringField('Security Answer', validators=[DataRequired()])
     submit = SubmitField('Sign Up')
 
     def validate_email(self, email):
@@ -51,3 +59,7 @@ class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Reset Password')
+
+class SecurityAnswerForm(FlaskForm):
+    answer = StringField('Your Answer', validators=[DataRequired()])
+    submit = SubmitField('Verify')

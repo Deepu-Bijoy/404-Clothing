@@ -10,6 +10,8 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.Text)
+    security_question = db.Column(db.String(200), nullable=True)
+    security_answer_hash = db.Column(db.String(128), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
     
     # Relationships
@@ -22,6 +24,14 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def set_security_answer(self, answer):
+        self.security_answer_hash = generate_password_hash(answer.strip().lower())
+
+    def check_security_answer(self, answer):
+        if not self.security_answer_hash:
+            return False
+        return check_password_hash(self.security_answer_hash, answer.strip().lower())
 
     def get_reset_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
