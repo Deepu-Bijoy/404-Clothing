@@ -51,6 +51,7 @@ def logout():
     return redirect(url_for('shop.index'))
 
 def send_reset_email(user):
+    print(f"DEBUG: Preparing email for {user.email}")
     token = user.get_reset_token()
     reset_url = url_for('auth.reset_token', token=token, _external=True)
     msg = Message('Password Reset Request',
@@ -61,11 +62,13 @@ def send_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
+    print(f"DEBUG: Attempting to send via {current_app.config.get('MAIL_SERVER')}:{current_app.config.get('MAIL_PORT')}")
     try:
         mail.send(msg)
+        print("DEBUG: mail.send(msg) finished successfully")
         return True
     except Exception as e:
-        print(f"FAILED TO SEND EMAIL: {e}")
+        print(f"DEBUG: mail.send(msg) FAILED: {e}")
         print(f"RESET LINK (FOR DEBUGGING): {reset_url}")
         return False
 
@@ -75,20 +78,27 @@ def reset_request():
         return redirect(url_for('shop.index'))
     form = RequestResetForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            token = user.get_reset_token()
-            reset_url = url_for('auth.reset_token', token=token, _external=True)
-            if send_reset_email(user):
-                flash('Password reset link sent to your email', 'info')
+        print(f"DEBUG: Processing reset request for {form.email.data}")
+        try:
+            user = User.query.filter_by(email=form.email.data).first()
+            print(f"DEBUG: User lookup finished. Found user: {user is not None}")
+            if user:
+                token = user.get_reset_token()
+                print("DEBUG: Token generated.")
+                if send_reset_email(user):
+                    print("DEBUG: send_reset_email returned True")
+                    flash('Password reset link sent to your email', 'info')
+                else:
+                    print("DEBUG: send_reset_email returned False")
+                    flash('Password reset link sent to your email', 'info')
                 return redirect(url_for('auth.login'))
             else:
+                print("DEBUG: No user found, redirecting...")
                 flash('Password reset link sent to your email', 'info')
                 return redirect(url_for('auth.login'))
-        else:
-            # Standard security practice: don't reveal if user exists
-            flash('Password reset link sent to your email', 'info')
-            return redirect(url_for('auth.login'))
+        except Exception as e:
+            print(f"DEBUG: CRASH in reset_request: {e}")
+            raise e
     return render_template('auth/reset_request.html', title='Reset Password', form=form)
 
 @auth_bp.route("/reset_password/<token>", methods=['GET', 'POST'])
