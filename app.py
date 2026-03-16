@@ -39,30 +39,35 @@ with app.app_context():
     # Migrate database if needed
     try:
         from sqlalchemy import text
+        is_postgres = 'postgresql' in str(db.engine.url).lower()
+        
         with db.engine.connect() as conn:
             # 1. Postgres specific (hash type update)
-            if 'postgresql' in str(db.engine.url).lower():
+            if is_postgres:
                 try:
                     conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
                     conn.commit()
-                except Exception: pass
+                except Exception:
+                    conn.rollback()
 
-            # 2. General migration for new columns (SQLite & Postgres)
-            for column, col_type in [
+            # 2. Add missing columns safely — each in its own transaction
+            columns = [
                 ('security_question', 'VARCHAR(200)'),
                 ('security_answer_hash', 'VARCHAR(128)'),
                 ('phone_number', 'VARCHAR(20)')
-            ]:
+            ]
+            for column, col_type in columns:
                 try:
-                    conn.execute(text(f'ALTER TABLE "user" ADD COLUMN {column} {col_type}'))
+                    if is_postgres:
+                        # PostgreSQL supports IF NOT EXISTS
+                        conn.execute(text(f'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS {column} {col_type}'))
+                    else:
+                        # SQLite does not support IF NOT EXISTS for ALTER TABLE
+                        conn.execute(text(f'ALTER TABLE "user" ADD COLUMN {column} {col_type}'))
                     conn.commit()
                 except Exception:
-                    # Column likely already exists
-                    pass
-            
-            conn.commit()
-    except Exception as e:
-        # Silencing startup errors for local SQLite dev
+                    conn.rollback()  # Must rollback so next statement can run
+    except Exception:
         pass
     
     # CRITICAL: Dispose of the engine to close startup connections
