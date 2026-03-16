@@ -28,6 +28,44 @@
             <!-- Left: Brand Logo -->
             <a class="navbar-brand me-4" href="{{ url_for('shop.index') }}">404Clothing</a>
             
+            <!-- Mobile: Always-visible icons (outside collapse) -->
+            <div class="d-flex align-items-center gap-2 ms-auto me-2 d-lg-none">
+                <!-- Mobile Search Icon -->
+                <a href="{{ url_for('shop.search') }}" class="nav-icon d-flex align-items-center justify-content-center" title="Search">
+                    <i class="fas fa-search"></i>
+                </a>
+                <!-- Mobile Login/User Icon -->
+                {% if current_user.is_authenticated %}
+                <div class="dropdown">
+                    <a class="nav-icon dropdown-toggle d-flex align-items-center justify-content-center text-decoration-none" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="far fa-user"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-soft border-0 mt-2">
+                        <li><h6 class="dropdown-header fw-bold text-dark">Hi, {{ current_user.name.split(' ')[0] }}</h6></li>
+                        {% if current_user.is_admin %}
+                        <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="fas fa-chart-line me-2 text-muted"></i>Admin Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('admin.users') }}"><i class="fas fa-users me-2 text-muted"></i>Manage Users</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('admin.banners') }}"><i class="fas fa-images me-2 text-muted"></i>Slider Management</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{{ url_for('shop.my_orders') }}"><i class="fas fa-box me-2 text-muted"></i>My Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="nav-icon d-flex align-items-center justify-content-center" title="Login">
+                    <i class="far fa-user"></i>
+                </a>
+                {% endif %}
+                <!-- Mobile Cart Icon -->
+                <a href="{{ url_for('cart.view_cart') }}" class="nav-icon d-flex align-items-center justify-content-center position-relative" title="Cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    {% if cart_count and cart_count > 0 %}
+                    <span class="badge-cart">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+
             <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -43,17 +81,17 @@
                     {% endfor %}
                 </ul>
                 
-                <!-- Right: Icons (Search, Profile, Wishlist, Cart) -->
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Search Feature -->
-                    <form action="{{ url_for('shop.search') }}" method="GET" class="d-none d-lg-flex position-relative me-3" style="width: 200px;">
+                <!-- Right: Icons visible on desktop only -->
+                <div class="d-none d-lg-flex align-items-center gap-2">
+                    <!-- Desktop Search -->
+                    <form action="{{ url_for('shop.search') }}" method="GET" class="d-flex position-relative me-3" style="width: 200px;">
                         <input type="search" class="form-control rounded-pill bg-light border-0 ps-3 pe-5" placeholder="What are you looking for?" name="q" value="{{ request.args.get('q', '') }}" style="height: 38px; font-size: 0.8rem;">
                         <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y p-0 pe-3 border-0" type="submit" style="color: var(--text-muted);">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
 
-                    <!-- User Profile Dropdown / Login -->
+                    <!-- Desktop User Profile Dropdown / Login -->
                     {% if current_user.is_authenticated %}
                     <div class="dropdown">
                         <a class="nav-icon dropdown-toggle d-flex align-items-center justify-content-center text-decoration-none" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -75,12 +113,12 @@
                     <a href="{{ url_for('auth.login') }}" class="nav-icon" title="Login"><i class="far fa-user"></i></a>
                     {% endif %}
 
-                    <!-- Wishlist Icon -->
-                    <a href="{{ url_for('shop.wishlist') }}" class="nav-icon d-none d-sm-flex align-items-center justify-content-center" title="Wishlist">
+                    <!-- Desktop Wishlist Icon -->
+                    <a href="{{ url_for('shop.wishlist') }}" class="nav-icon d-flex align-items-center justify-content-center" title="Wishlist">
                         <i class="far fa-heart"></i>
                     </a>
 
-                    <!-- Cart Icon -->
+                    <!-- Desktop Cart Icon -->
                     <a href="{{ url_for('cart.view_cart') }}" class="nav-icon d-flex align-items-center justify-content-center" title="Cart">
                         <i class="fas fa-shopping-bag"></i>
                         {% if cart_count and cart_count > 0 %}
