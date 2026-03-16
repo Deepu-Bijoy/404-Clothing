@@ -55,24 +55,26 @@ with app.app_context():
 
             # 2. Add missing columns safely — each in its own transaction
             columns = [
-                ('security_question', 'VARCHAR(200)'),
-                ('security_answer_hash', 'VARCHAR(128)'),
-                ('phone_number', 'VARCHAR(20)')
+                ('"user"', 'security_question', 'VARCHAR(200)'),
+                ('"user"', 'security_answer_hash', 'VARCHAR(128)'),
+                ('"user"', 'phone_number', 'VARCHAR(20)'),
+                ('cart_item', 'size', 'VARCHAR(10)'),
+                ('order_item', 'size', 'VARCHAR(10)')
             ]
-            for column, col_type in columns:
+            for table, column, col_type in columns:
                 try:
-                    print(f"DEBUG: Attempting to add column {column}...")
+                    print(f"DEBUG: Attempting to add column {column} to {table}...")
                     if is_postgres:
                         # PostgreSQL supports IF NOT EXISTS
-                        conn.execute(text(f'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS {column} {col_type}'))
+                        conn.execute(text(f'ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {column} {col_type}'))
                     else:
                         # SQLite does not support IF NOT EXISTS for ALTER TABLE
-                        conn.execute(text(f'ALTER TABLE "user" ADD COLUMN {column} {col_type}'))
+                        conn.execute(text(f'ALTER TABLE {table} ADD COLUMN {column} {col_type}'))
                     conn.commit()
-                    print(f"DEBUG: Successfully ensured column {column} exists")
+                    print(f"DEBUG: Successfully ensured column {column} exists on {table}")
                 except Exception as e:
                     conn.rollback()  # Must rollback so next statement can run
-                    print(f"DEBUG: Skip adding {column} (likely already exists or error): {e}")
+                    print(f"DEBUG: Skip adding {column} to {table} (likely already exists or error): {e}")
     except Exception as e:
         print(f"DEBUG: Migration error: {e}")
         pass

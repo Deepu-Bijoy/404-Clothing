@@ -21,17 +21,23 @@ def view_cart():
 def add_to_cart(product_id):
     product = db.get_or_404(Product, product_id)
     quantity = int(request.form.get('quantity', 1))
+    size = request.form.get('size', 'M') # Default to M if not provided
     
-    cart_item = CartItem.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    # Check if this exact product AND size is already in cart
+    cart_item = CartItem.query.filter_by(
+        user_id=current_user.id, 
+        product_id=product_id,
+        size=size
+    ).first()
     
     if cart_item:
         cart_item.quantity += quantity
     else:
-        cart_item = CartItem(user_id=current_user.id, product_id=product_id, quantity=quantity)
+        cart_item = CartItem(user_id=current_user.id, product_id=product_id, quantity=quantity, size=size)
         db.session.add(cart_item)
         
     db.session.commit()
-    flash(f'{product.name} added to cart.', 'success')
+    flash(f'{product.name} (Size: {size}) added to cart.', 'success')
     return redirect(url_for('cart.view_cart'))
 
 @cart_bp.route('/remove/<int:item_id>', methods=['POST'])

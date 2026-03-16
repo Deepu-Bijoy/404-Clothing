@@ -56,7 +56,8 @@ def create_order_after_payment(user_id, total_price, payment_id, razorpay_order_
             order_id=new_order.id,
             product_id=item.product_id,
             quantity=item.quantity,
-            price=item.product.price
+            price=item.product.price,
+            size=item.size
         )
         db.session.add(order_item)
         item.product.stock -= item.quantity

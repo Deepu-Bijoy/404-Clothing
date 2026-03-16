@@ -100,6 +100,7 @@
                 <thead>
                     <tr style="border-bottom: 1px solid #000;">
                         <th style="text-align: left;">Item</th>
+                        <th style="text-align: center;">Size</th>
                         <th style="text-align: center;">Qty</th>
                     </tr>
                 </thead>
@@ -107,6 +108,7 @@
                     {% for item in order.items %}
                     <tr>
                         <td>{{ item.product.name }}</td>
+                        <td style="text-align: center;">{{ item.size or 'M' }}</td>
                         <td style="text-align: center;">{{ item.quantity }}</td>
                     </tr>
                     {% endfor %}

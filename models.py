@@ -106,6 +106,7 @@ class CartItem(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     quantity = db.Column(db.Integer, default=1)
+    size = db.Column(db.String(10), nullable=True) # Added for product sizing
     
     product = db.relationship('Product')
 
@@ -145,6 +146,7 @@ class OrderItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False) # Price at time of purchase
+    size = db.Column(db.String(10), nullable=True) # Added for product sizing
     
     product = db.relationship('Product')
 

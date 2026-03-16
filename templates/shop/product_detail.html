@@ -91,23 +91,25 @@
                     {% endif %}
                 </div>
 
-                <!-- Mock Size Selector -->
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <label class="fw-bold fs-6">Select Size</label>
-                        <a href="{{ url_for('shop.size_guide') }}" class="text-danger text-sm fw-600 text-decoration-none"><i class="fas fa-ruler me-1"></i> Size Guide</a>
-                    </div>
-                    <div class="size-selector">
-                        <div class="size-btn">S</div>
-                        <div class="size-btn active">M</div>
-                        <div class="size-btn">L</div>
-                        <div class="size-btn">XL</div>
-                        <div class="size-btn">XXL</div>
-                    </div>
-                </div>
-
+                <!-- Size Selector & Add to Cart Form -->
                 <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST" class="mb-5">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <input type="hidden" name="size" id="selected-size" value="M" />
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="fw-bold fs-6">Select Size</label>
+                            <a href="{{ url_for('shop.size_guide') }}" class="text-danger text-sm fw-600 text-decoration-none"><i class="fas fa-ruler me-1"></i> Size Guide</a>
+                        </div>
+                        <div class="size-selector" id="size-options">
+                            <div class="size-btn" data-size="S">S</div>
+                            <div class="size-btn active" data-size="M">M</div>
+                            <div class="size-btn" data-size="L">L</div>
+                            <div class="size-btn" data-size="XL">XL</div>
+                            <div class="size-btn" data-size="XXL">XXL</div>
+                        </div>
+                    </div>
+
                     <div class="row g-3">
                         <div class="col-3">
                             <select name="quantity" class="form-select form-select-lg rounded-pill text-center fw-bold shadow-soft h-100" {% if product.stock <= 0 %}disabled{% endif %}>
@@ -320,6 +322,21 @@
                 if(newActive) newActive.classList.add('active');
             });
         }
+
+        // Size Selector Logic
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        const sizeInput = document.getElementById('selected-size');
+        
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all
+                sizeBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked
+                this.classList.add('active');
+                // Update hidden input
+                sizeInput.value = this.getAttribute('data-size');
+            });
+        });
     });
 </script>
 {% endblock %}

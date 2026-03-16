@@ -23,7 +23,7 @@
         {% for item in order.items %}
         <div class="d-flex align-items-center py-3 {% if not loop.last %}border-bottom{% endif %}">
             {% if item.product.image_url %}<img src="{{ item.product.image_url }}" class="me-3" style="width:60px;height:60px;object-fit:cover;border:1px solid var(--border-subtle);">{% endif %}
-            <div class="flex-grow-1"><h6 class="mb-0" style="font-size:0.88rem;">{{ item.product.name }}</h6><small class="text-muted">Qty: {{ item.quantity }} × ₹{{ item.price }}</small></div>
+            <div class="flex-grow-1"><h6 class="mb-0" style="font-size:0.88rem;">{{ item.product.name }}</h6><small class="text-muted">Size: {{ item.size or 'M' }} | Qty: {{ item.quantity }} × ₹{{ item.price }}</small></div>
             <strong>₹{{ item.quantity * item.price }}</strong>
         </div>
         {% endfor %}

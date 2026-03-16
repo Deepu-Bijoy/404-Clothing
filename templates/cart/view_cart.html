@@ -35,7 +35,8 @@
                                             <a href="{{ url_for('shop.product_detail', product_id=item.product.id) }}" class="text-decoration-none">
                                                 <h6 class="mb-1 fw-bold text-dark text-truncate">{{ item.product.name }}</h6>
                                             </a>
-                                            <p class="text-muted text-xs text-uppercase mb-2">{{ item.product.category.name }}</p>
+                                            <p class="text-muted text-xs text-uppercase mb-1">{{ item.product.category.name }}</p>
+                                            <p class="text-dark text-xs fw-bold mb-2">Size: {{ item.size or 'M' }}</p>
                                             <p class="d-md-none text-danger fw-bold text-sm mb-0">₹{{ item.product.price }}</p>
                                         </div>
                                     </div>
