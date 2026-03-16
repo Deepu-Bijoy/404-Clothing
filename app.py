@@ -55,8 +55,6 @@ with app.app_context():
 
             # 2. Add missing columns safely — each in its own transaction
             columns = [
-                ('"user"', 'security_question', 'VARCHAR(200)'),
-                ('"user"', 'security_answer_hash', 'VARCHAR(128)'),
                 ('"user"', 'phone_number', 'VARCHAR(20)'),
                 ('cart_item', 'size', 'VARCHAR(10)'),
                 ('order_item', 'size', 'VARCHAR(10)')
