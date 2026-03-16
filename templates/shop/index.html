@@ -16,14 +16,18 @@
                 <img src="{{ banner.image_path }}" class="d-block w-100" alt="{{ banner.title }}">
                 <div class="hero-content">
                     {% if banner.title %}
-                    <p class="text-xs fw-bold text-uppercase mb-2 text-white" style="letter-spacing: 2px;">{{ banner.title }}</p>
+                    {% set clean_title = (banner.title or '')|replace('<br>', ' ')|replace('<BR>', ' ')|replace('<Br>', ' ')|replace('<bR>', ' ') %}
+                    <p class="text-xs fw-bold text-uppercase mb-2 text-white" style="letter-spacing: 2px; user-select: none;">{{ clean_title }}</p>
                     {% endif %}
                     
-                    {% set titles = (banner.title or "").split('<br>') %}
+                    {% set titles = (banner.title or '').split('<br>') %}
+                    {% if titles|length < 2 %}
+                        {% set titles = (banner.title or '').split('<BR>') %}
+                    {% endif %}
                     {% if titles|length > 1 %}
-                    <h1>{{ titles[0] }}<br>{{ titles[1] }}</h1>
+                    <h1 style="user-select: none;">{{ titles[0] }}<br>{{ titles[1] }}</h1>
                     {% else %}
-                    <h1>{{ banner.title or "New Arrival" }}</h1>
+                    <h1 style="user-select: none;">{{ banner.title or "New Arrival" }}</h1>
                     {% endif %}
                     
                     {% if banner.subtitle %}

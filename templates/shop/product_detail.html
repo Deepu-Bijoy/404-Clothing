@@ -2,13 +2,7 @@
 {% block title %}{{ product.name }} — 404Clothing{% endblock %}
 {% block content %}
 <div class="container-fluid px-4 px-lg-5 mt-4 mb-5">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb text-sm fw-600">
-            <li class="breadcrumb-item"><a href="{{ url_for('shop.index') }}" class="text-muted text-decoration-none hover-danger">Home</a></li>
-            <li class="breadcrumb-item"><a href="{{ url_for('shop.category_products', slug=product.category.slug) }}" class="text-muted text-decoration-none hover-danger">{{ product.category.name }}</a></li>
-            <li class="breadcrumb-item active text-dark" aria-current="page">{{ product.name }}</li>
-        </ol>
-    </nav>
+
 
     <div class="row g-5 mb-5">
         <!-- Product Images -->

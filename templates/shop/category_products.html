@@ -6,12 +6,7 @@
 <!-- Header -->
 <div class="bg-light py-4 mb-5 border-bottom">
     <div class="container-fluid px-4 px-lg-5">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-2 text-xs text-uppercase fw-600" style="letter-spacing: 0.05em;">
-                <li class="breadcrumb-item"><a href="{{ url_for('shop.index') }}" class="text-decoration-none text-muted">Home</a></li>
-                <li class="breadcrumb-item active text-dark" aria-current="page">{{ category.name }}</li>
-            </ol>
-        </nav>
+
         <h2 class="font-heading fw-bold mb-0 text-dark" style="font-size: 2.2rem;">{{ category.name }}</h2>
         <p class="text-muted text-sm mt-2 mb-0">{{ products|length }} items</p>
     </div>
@@ -32,12 +27,12 @@
                 <div class="filter-group">
                     <h6 class="filter-title">Categories</h6>
                     <div class="filter-checkbox">
-                        <input type="radio" name="category" id="cat-all" {% if not category %}checked{% endif %} onchange="window.location.href='{{ url_for('shop.index') }}'">
+                        <input type="radio" name="category" id="cat-all" {% if not category %}checked{% endif %} onchange="window.location.href='{{ url_for('shop.index') }}';">
                         <label for="cat-all" class="text-muted"><a href="{{ url_for('shop.index') }}" class="text-decoration-none text-muted">All Products</a></label>
                     </div>
                     {% for cat in categories %}
                     <div class="filter-checkbox">
-                        <input type="radio" name="category" id="cat-{{ cat.id }}" {% if cat.id == category.id %}checked{% endif %} onchange="window.location.href='{{ url_for('shop.category_products', slug=cat.slug) }}'">
+                        <input type="radio" name="category" id="cat-{{ cat.id }}" {% if cat.id == category.id %}checked{% endif %} onchange="window.location.href='{{ url_for('shop.category_products', slug=cat.slug) }}';">
                         <label for="cat-{{ cat.id }}" class="text-muted"><a href="{{ url_for('shop.category_products', slug=cat.slug) }}" class="text-decoration-none {% if cat.id == category.id %}fw-bold text-dark{% else %}text-muted{% endif %}">{{ cat.name }}</a></label>
                     </div>
                     {% endfor %}

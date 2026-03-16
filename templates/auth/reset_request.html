@@ -10,7 +10,7 @@
                         <i class="fas fa-key text-dark" style="font-size: 2rem;"></i>
                     </div>
                     <h2 class="font-heading fw-bold mb-2">Reset Password</h2>
-                    <p class="text-muted text-sm">Enter your email to receive a reset link</p>
+                    <p class="text-muted text-sm">Enter your details to verify your identity</p>
                 </div>
 
                 <form method="POST">
@@ -25,6 +25,30 @@
                             </div>
                         {% else %}
                             {{ form.email(class="form-control bg-light", placeholder="name@example.com") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        {{ form.name.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.name.errors %}
+                            {{ form.name(class="form-control bg-light is-invalid", placeholder="Full Name (as registered)") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.name.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.name(class="form-control bg-light", placeholder="Full Name (as registered)") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        {{ form.phone_number.label(class="form-label fw-600 text-sm mb-2 text-dark") }}
+                        {% if form.phone_number.errors %}
+                            {{ form.phone_number(class="form-control bg-light is-invalid", placeholder="Phone Number") }}
+                            <div class="invalid-feedback fw-600 text-xs mt-2">
+                                {% for e in form.phone_number.errors %}{{ e }}{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.phone_number(class="form-control bg-light", placeholder="Phone Number") }}
                         {% endif %}
                     </div>
                     

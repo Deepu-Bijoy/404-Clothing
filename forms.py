@@ -9,14 +9,7 @@ class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    security_question = SelectField('Security Question', choices=[
-        ('What was your first pet?', 'What was your first pet?'),
-        ('What was the name of your elementary school?', 'What was the name of your elementary school?'),
-        ('In what city were you born?', 'In what city were you born?'),
-        ('What is your favorite movie?', 'What is your favorite movie?'),
-        ('What was the make of your first car?', 'What was the make of your first car?')
-    ], validators=[DataRequired()])
-    security_answer = StringField('Security Answer', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired(), Length(min=10, max=15)])
     submit = SubmitField('Sign Up')
 
     def validate_email(self, email):
@@ -48,7 +41,9 @@ class CheckoutForm(FlaskForm):
 
 class RequestResetForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Request Password Reset')
+    name = StringField('Username (Full Name)', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    submit = SubmitField('Verify and Reset')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()

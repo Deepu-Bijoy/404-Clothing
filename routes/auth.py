@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, login_required, current_user
 from forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm
 from models import User
+from extensions import db
 from itsdangerous import URLSafeTimedSerializer as Serializer
 
 auth_bp = Blueprint('auth', __name__)
@@ -16,10 +17,9 @@ def register():
         new_user = User(
             name=form.name.data, 
             email=form.email.data,
-            security_question=form.security_question.data
+            phone_number=form.phone_number.data
         )
         new_user.set_password(form.password.data)
-        new_user.set_security_answer(form.security_answer.data)
         db.session.add(new_user)
         db.session.commit()
         
@@ -64,39 +64,21 @@ def reset_request():
         return redirect(url_for('shop.index'))
     form = RequestResetForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=form.email.data.strip()).first()
         if user:
-            if not user.security_question:
-                flash('Your account does not have a security question set. Please contact support.', 'danger')
-                return redirect(url_for('auth.login'))
-            return redirect(url_for('auth.reset_verify', email=user.email))
+            # Triple check: Email, Name, and Phone Number must match
+            if user.name.strip().lower() == form.name.data.strip().lower() and \
+               user.phone_number.strip() == form.phone_number.data.strip():
+                token = user.get_reset_token()
+                # In a real app we'd send email, here we just redirect with token for demo/simplicity or follow previous flow
+                flash('Verification successful. Please set your new password.', 'success')
+                return redirect(url_for('auth.reset_token', token=token))
+            else:
+                flash('Verification failed. Name or Phone Number does not match our records.', 'danger')
         else:
             flash('There is no account with that email.', 'danger')
     return render_template('auth/reset_request.html', title='Reset Password', form=form)
 
-@auth_bp.route("/reset_verify", methods=['GET', 'POST'])
-def reset_verify():
-    if current_user.is_authenticated:
-        return redirect(url_for('shop.index'))
-    email = request.args.get('email')
-    if not email:
-        return redirect(url_for('auth.reset_request'))
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return redirect(url_for('auth.reset_request'))
-    
-    form = SecurityAnswerForm()
-    if form.validate_on_submit():
-        if user.check_security_answer(form.answer.data):
-            # Generate a temporary token for the reset page
-            token = user.get_reset_token()
-            return redirect(url_for('auth.reset_token', token=token))
-        else:
-            flash('Incorrect answer. Please try again.', 'danger')
-            
-    return render_template('auth/reset_verify.html', title='Verify Security Question', 
-                           form=form, question=user.security_question)
 
 @auth_bp.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):

@@ -181,6 +181,7 @@ a {
     max-width: 500px;
     text-align: left;
     z-index: 10;
+    user-select: none; /* Prevent text selection on touch/click */
 }
 
 .hero-content h1 {
@@ -190,6 +191,16 @@ a {
     line-height: 1.1;
     margin-bottom: 1rem;
     text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.2rem; /* Smaller Font on Mobile */
+    }
+    .hero-content {
+        left: 5%;
+        max-width: 90%;
+    }
 }
 
 /* -----------------------------------------
