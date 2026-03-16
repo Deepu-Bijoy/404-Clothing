@@ -16,14 +16,30 @@ def get_supabase_client():
 
 def upload_to_supabase(file, folder='products'):
     client = get_supabase_client()
-    if not client:
-        # Fallback to local if no client (should not happen in prod)
-        return None
     
-    bucket_name = os.environ.get('SUPABASE_BUCKET_NAME', 'product-images')
     filename = secure_filename(file.filename or "image.jpg")
     unique_filename = f"{uuid.uuid4().hex[:8]}_{filename}"
     path_on_supabase = f"{folder}/{unique_filename}"
+    
+    if not client:
+        # FALLBACK TO LOCAL STORAGE
+        try:
+            # Create local path
+            from flask import current_app
+            local_dir = os.path.join(current_app.root_path, 'static', 'uploads', folder)
+            os.makedirs(local_dir, exist_ok=True)
+            
+            local_path = os.path.join(local_dir, unique_filename)
+            file.seek(0)
+            file.save(local_path)
+            
+            # Return relative path for local serving
+            return f"/static/uploads/{folder}/{unique_filename}"
+        except Exception as e:
+            print(f"Local Storage Fallback Error: {e}")
+            return None
+    
+    bucket_name = os.environ.get('SUPABASE_BUCKET_NAME', 'product-images')
     
     # Ensure folder structure in path
     try:
@@ -32,7 +48,6 @@ def upload_to_supabase(file, folder='products'):
         content = file.read()
         
         # Upload to Supabase Storage
-        # We use public bucket, so anyone can see the image via URL
         res = client.storage.from_(bucket_name).upload(
             path=path_on_supabase,
             file=content,
@@ -40,7 +55,6 @@ def upload_to_supabase(file, folder='products'):
         )
         
         # Construct the public URL
-        # Format: https://[project_ref].supabase.co/storage/v1/object/public/[bucket_name]/[path]
         supabase_url = os.environ.get('SUPABASE_URL').rstrip('/')
         public_url = f"{supabase_url}/storage/v1/object/public/{bucket_name}/{path_on_supabase}"
         return public_url

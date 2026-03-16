@@ -40,6 +40,7 @@ with app.app_context():
     try:
         from sqlalchemy import text
         is_postgres = 'postgresql' in str(db.engine.url).lower()
+        print(f"DEBUG: Starting DB migration. Database type: {'PostgreSQL' if is_postgres else 'SQLite'}")
         
         with db.engine.connect() as conn:
             # 1. Postgres specific (hash type update)
@@ -47,8 +48,10 @@ with app.app_context():
                 try:
                     conn.execute(text('ALTER TABLE "user" ALTER COLUMN password_hash TYPE TEXT'))
                     conn.commit()
-                except Exception:
+                    print("DEBUG: Successfully updated password_hash type to TEXT")
+                except Exception as e:
                     conn.rollback()
+                    print(f"DEBUG: Skipping password_hash type update (likely already TEXT): {e}")
 
             # 2. Add missing columns safely — each in its own transaction
             columns = [
@@ -58,6 +61,7 @@ with app.app_context():
             ]
             for column, col_type in columns:
                 try:
+                    print(f"DEBUG: Attempting to add column {column}...")
                     if is_postgres:
                         # PostgreSQL supports IF NOT EXISTS
                         conn.execute(text(f'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS {column} {col_type}'))
@@ -65,9 +69,12 @@ with app.app_context():
                         # SQLite does not support IF NOT EXISTS for ALTER TABLE
                         conn.execute(text(f'ALTER TABLE "user" ADD COLUMN {column} {col_type}'))
                     conn.commit()
-                except Exception:
+                    print(f"DEBUG: Successfully ensured column {column} exists")
+                except Exception as e:
                     conn.rollback()  # Must rollback so next statement can run
-    except Exception:
+                    print(f"DEBUG: Skip adding {column} (likely already exists or error): {e}")
+    except Exception as e:
+        print(f"DEBUG: Migration error: {e}")
         pass
     
     # CRITICAL: Dispose of the engine to close startup connections
