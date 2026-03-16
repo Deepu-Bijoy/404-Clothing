@@ -31,7 +31,7 @@
             <!-- Mobile: Always-visible icons (outside collapse) -->
             <div class="d-flex align-items-center gap-2 ms-auto me-2 d-lg-none">
                 <!-- Mobile Search Icon -->
-                <a href="{{ url_for('shop.search') }}" class="nav-icon d-flex align-items-center justify-content-center" title="Search">
+                <a href="#mobileSearch" data-bs-toggle="collapse" class="nav-icon d-flex align-items-center justify-content-center" aria-expanded="false" aria-controls="mobileSearch" title="Search">
                     <i class="fas fa-search"></i>
                 </a>
                 <!-- Mobile Login/User Icon -->
@@ -126,6 +126,16 @@
                         {% endif %}
                     </a>
                 </div>
+            </div>
+
+            <!-- Mobile Search Bar (Collapsible) -->
+            <div class="collapse w-100 d-lg-none mt-3 mb-1" id="mobileSearch">
+                <form action="{{ url_for('shop.search') }}" method="GET" class="position-relative">
+                    <input type="search" class="form-control rounded-pill bg-light border-0 ps-3 pe-5" placeholder="Search products..." name="q" value="{{ request.args.get('q', '') }}" style="height: 44px; font-size: 0.95rem;">
+                    <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y p-0 pe-3 border-0" type="submit" style="color: #6c757d;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
