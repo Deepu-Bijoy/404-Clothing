@@ -261,6 +261,22 @@ def delete_product(product_id):
          return redirect(url_for('admin.products'))
     
     try:
+        from models import OrderItem, CartItem
+        
+        # Check if product is referenced in any orders
+        has_orders = OrderItem.query.filter_by(product_id=product.id).first() is not None
+        
+        # Remove from all user carts
+        CartItem.query.filter_by(product_id=product.id).delete()
+        
+        if has_orders:
+            # Soft delete to preserve order history
+            product.is_active = False
+            db.session.commit()
+            flash('Product removed from shop but archived to preserve order history.', 'success')
+            return redirect(url_for('admin.products'))
+            
+        # If no orders, proceed with hard deletion
         if product.image_url:
             if 'supabase.co' in product.image_url:
                 delete_from_supabase(product.image_url)
@@ -287,7 +303,8 @@ def delete_product(product_id):
         flash('Product and associated assets permanently deleted.', 'success')
     except Exception as e:
         db.session.rollback()
-        flash('Error deleting product.', 'danger')
+        current_app.logger.error(f"Error deleting product: {e}")
+        flash(f'Error deleting product: {str(e)}', 'danger')
     
     return redirect(url_for('admin.products'))
 
