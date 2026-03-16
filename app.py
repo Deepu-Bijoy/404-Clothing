@@ -48,7 +48,11 @@ with app.app_context():
                 except Exception: pass
 
             # 2. General migration for new columns (SQLite & Postgres)
-            for column, col_type in [('security_question', 'VARCHAR(200)'), ('security_answer_hash', 'VARCHAR(128)')]:
+            for column, col_type in [
+                ('security_question', 'VARCHAR(200)'),
+                ('security_answer_hash', 'VARCHAR(128)'),
+                ('phone_number', 'VARCHAR(20)')
+            ]:
                 try:
                     conn.execute(text(f'ALTER TABLE "user" ADD COLUMN {column} {col_type}'))
                     conn.commit()
