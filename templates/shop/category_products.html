@@ -64,12 +64,11 @@
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <label class="text-sm text-muted fw-600 d-none d-md-block">Sort by:</label>
-                    <select class="form-select bg-light border-0 rounded-pill shadow-none text-sm fw-600" style="width: 180px;">
-                        <option>Popularity</option>
-                        <option>New Arrivals</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Best Rated</option>
+                    <select class="form-select bg-light border-0 rounded-pill shadow-none text-sm fw-600" style="width: 180px;" onchange="updateSort(this.value)">
+                        <option value="default" {% if request.args.get('sort') == 'default' or not request.args.get('sort') %}selected{% endif %}>Default</option>
+                        <option value="price_low" {% if request.args.get('sort') == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if request.args.get('sort') == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="rating" {% if request.args.get('sort') == 'rating' %}selected{% endif %}>Best Rated</option>
                     </select>
                 </div>
             </div>

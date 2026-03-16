@@ -97,6 +97,14 @@ def category_products(slug):
     if max_price is not None:
         query = query.filter(Product.price <= max_price)
     
+    sort = request.args.get('sort', 'default')
+    if sort == 'price_low':
+        query = query.order_by(Product.price.asc())
+    elif sort == 'price_high':
+        query = query.order_by(Product.price.desc())
+    elif sort == 'rating':
+        query = query.outerjoin(Review).group_by(Product.id).order_by(db.func.avg(Review.rating).desc())
+    
     products = query.all()
     categories = Category.query.all()
     
@@ -167,6 +175,14 @@ def search():
     if max_price is not None:
         filter_query = filter_query.filter(Product.price <= max_price)
     
+    sort = request.args.get('sort', 'default')
+    if sort == 'price_low':
+        filter_query = filter_query.order_by(Product.price.asc())
+    elif sort == 'price_high':
+        filter_query = filter_query.order_by(Product.price.desc())
+    elif sort == 'rating':
+        filter_query = filter_query.outerjoin(Review).group_by(Product.id).order_by(db.func.avg(Review.rating).desc())
+
     products = filter_query.all()
     
     categories = Category.query.all()
