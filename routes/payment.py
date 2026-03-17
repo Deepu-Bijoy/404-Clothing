@@ -31,7 +31,7 @@ def create_order_after_payment(user_id, total_price, payment_id, razorpay_order_
         user_id=user_id,
         total_price=total_price,
         shipping_fee=shipping_fee,
-        status='Processing',
+        status='Paid',
         payment_status='Paid',
         full_name=address_data.get('full_name'),
         phone_number=address_data.get('phone_number'),

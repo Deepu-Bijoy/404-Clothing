@@ -230,4 +230,19 @@ def wishlist():
                            categories=categories,
                            wishlist_product_ids=wishlist_product_ids)
 
+@shop_bp.route('/review/delete/<int:review_id>', methods=['POST'])
+@login_required
+def delete_review(review_id):
+    """Allow review owner or admin to delete a review."""
+    from models import Review
+    review = db.get_or_404(Review, review_id)
+    product_id = review.product_id
 
+    if review.user_id != current_user.id and not current_user.is_admin:
+        flash('You are not authorized to delete this review.', 'danger')
+        return redirect(url_for('shop.product_detail', product_id=product_id))
+
+    db.session.delete(review)
+    db.session.commit()
+    flash('Review deleted successfully.', 'success')
+    return redirect(url_for('shop.product_detail', product_id=product_id))

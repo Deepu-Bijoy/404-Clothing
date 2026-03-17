@@ -271,6 +271,14 @@
                                     {% for i in range(5 - review.rating) %}<i class="far fa-star text-muted opacity-25"></i>{% endfor %}
                                 </div>
                                 <span class="text-muted text-xs">{{ review.created_at.strftime('%d %b %Y') }}</span>
+                                {% if current_user.is_authenticated and (current_user.id == review.user_id or current_user.is_admin) %}
+                                <form action="{{ url_for('shop.delete_review', review_id=review.id) }}" method="POST" class="d-inline ms-2" onsubmit="return confirm('Delete this review?')">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Delete Review">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
                             </div>
                         </div>
                         <p class="mb-3 text-dark mt-3">{{ review.comment }}</p>

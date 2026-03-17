@@ -26,10 +26,6 @@
                 <!-- Category Filter -->
                 <div class="filter-group">
                     <h6 class="filter-title">Categories</h6>
-                    <div class="filter-checkbox">
-                        <input type="radio" name="category" id="cat-all" {% if not category %}checked{% endif %} onchange="window.location.href='{{ url_for('shop.index') }}';">
-                        <label for="cat-all" class="text-muted"><a href="{{ url_for('shop.index') }}" class="text-decoration-none text-muted">All Products</a></label>
-                    </div>
                     {% for cat in categories %}
                     <div class="filter-checkbox">
                         <input type="radio" name="category" id="cat-{{ cat.id }}" {% if cat.id == category.id %}checked{% endif %} onchange="window.location.href='{{ url_for('shop.category_products', slug=cat.slug) }}';">

@@ -1,0 +1,18 @@
+﻿
+=== Route Verification ===
+
+  OK   [200] Homepage
+  OK   [200] Search (basic)
+  OK   [200] Search (sort price low)
+  OK   [200] Search (sort price high)
+  OK   [200] Search (sort rating)
+  OK   [200] Search (price filter)
+  OK   [200] Login Page
+  OK   [200] Register Page
+  FAIL [404] Cart (redirect to login or show cart)
+  FAIL [200] Wishlist (redirects to login)
+  FAIL [200] My Orders (redirects to login)
+  FAIL [404] Size Guide
+  OK   [200] Size Guide
+
+Some routes failed - check above.

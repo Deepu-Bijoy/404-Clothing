@@ -538,3 +538,27 @@ def delete_product_image(image_id):
     db.session.commit()
     flash('Image removed from gallery.', 'success')
     return redirect(url_for('admin.products'))
+
+
+@admin_bp.route('/order/delete/<int:order_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_order(order_id):
+    """Permanently delete an order, its items, and payment record."""
+    order = db.get_or_404(Order, order_id)
+    try:
+        # Delete payment record if exists
+        if order.payment:
+            db.session.delete(order.payment)
+        # Delete order items
+        for item in order.items:
+            db.session.delete(item)
+        # Delete the order
+        db.session.delete(order)
+        db.session.commit()
+        flash(f'Order #{order_id} has been permanently deleted.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error deleting order {order_id}: {e}")
+        flash(f'Error deleting order: {str(e)}', 'danger')
+    return redirect(url_for('admin.orders'))
