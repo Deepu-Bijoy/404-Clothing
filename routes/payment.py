@@ -8,8 +8,6 @@ import time
 
 payment_bp = Blueprint('payment', __name__)
 
-@payment_bp.route('/verify', methods=['POST'])
-@login_required
 def create_order_after_payment(user_id, total_price, payment_id, razorpay_order_id, shipping_fee=50.0, gateway='Razorpay'):
     """Helper to handle database operations after payment success"""
     from flask import session
