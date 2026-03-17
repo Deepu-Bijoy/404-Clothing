@@ -157,7 +157,6 @@ def search():
         search_term = f"%{word}%"
         search_filters.append(db.or_(
             Product.name.ilike(search_term),
-            Product.description.ilike(search_term),
             Category.name.ilike(search_term)
         ))
     
