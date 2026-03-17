@@ -10,7 +10,7 @@
         <div class="col-md-2"><p class="section-label mb-0" style="font-size:0.65rem;">Order</p><h6 class="font-heading mb-0">#{{ order.id }}</h6></div>
         <div class="col-md-2"><p class="section-label mb-0" style="font-size:0.65rem;">Date</p><p class="mb-0" style="font-size:0.88rem;">{{ order.created_at.strftime('%d %b %Y') }}</p></div>
         <div class="col-md-2"><p class="section-label mb-0" style="font-size:0.65rem;">Total</p><p class="mb-0 fw-bold">₹{{ order.total_price }}</p></div>
-        <div class="col-md-2"><p class="section-label mb-0" style="font-size:0.65rem;">Status</p>{% if order.status == 'Delivered' %}<span class="badge bg-success">{{ order.status }}</span>{% elif order.status == 'Dispatched' %}<span class="badge bg-info">{{ order.status }}</span>{% else %}<span class="badge bg-primary">{{ order.status }}</span>{% endif %}</div>
+        <div class="col-md-2"><p class="section-label mb-0" style="font-size:0.65rem;">Status</p>{% if order.payment_status == 'Paid' %}<span class="badge bg-success">Paid</span>{% else %}<span class="badge bg-warning text-dark">{{ order.payment_status }}</span>{% endif %}</div>
         <div class="col-md-2"><p class="section-label mb-0" style="font-size:0.65rem;">Items</p><p class="mb-0" style="font-size:0.88rem;">{{ order.items|length }}</p></div>
         <div class="col-md-2 text-end"><a href="{{ url_for('shop.order_detail', order_id=order.id) }}" class="btn btn-outline-dark px-3" style="font-size:0.75rem;">View</a></div>
     </div>
