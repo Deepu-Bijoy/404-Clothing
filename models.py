@@ -51,7 +51,7 @@ class Category(db.Model):
     name = db.Column(db.String(50), nullable=False, unique=True)
     slug = db.Column(db.String(50), nullable=False, unique=True)
     
-    image_url = db.Column(db.String(200), nullable=True)
+    image_url = db.Column(db.Text, nullable=True)
     products = db.relationship('Product', backref='category', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -60,7 +60,7 @@ class Category(db.Model):
 class ProductImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    image_url = db.Column(db.String(200), nullable=False)
+    image_url = db.Column(db.Text, nullable=False)
     
     def __repr__(self):
         return f'<ProductImage {self.id}>'
@@ -71,7 +71,7 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, default=0)
-    image_url = db.Column(db.String(200), nullable=True) # Main/Thumbnail Image
+    image_url = db.Column(db.Text, nullable=True) # Main/Thumbnail Image
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     is_featured = db.Column(db.Boolean, default=False)
@@ -170,14 +170,14 @@ class Review(db.Model):
 class ReviewImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False)
-    image_url = db.Column(db.String(200), nullable=False)
+    image_url = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
         return f'<ReviewImage {self.id}>'
 
 class Banner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_path = db.Column(db.String(200), nullable=False)
+    image_path = db.Column(db.Text, nullable=False)
     title = db.Column(db.String(100), nullable=True)
     subtitle = db.Column(db.String(200), nullable=True)
     button_text = db.Column(db.String(50), nullable=True)

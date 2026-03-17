@@ -22,22 +22,8 @@ def upload_to_supabase(file, folder='products'):
     path_on_supabase = f"{folder}/{unique_filename}"
     
     if not client:
-        # FALLBACK TO LOCAL STORAGE
-        try:
-            # Create local path
-            from flask import current_app
-            local_dir = os.path.join(current_app.root_path, 'static', 'uploads', folder)
-            os.makedirs(local_dir, exist_ok=True)
-            
-            local_path = os.path.join(local_dir, unique_filename)
-            file.seek(0)
-            file.save(local_path)
-            
-            # Return relative path for local serving
-            return f"/static/uploads/{folder}/{unique_filename}"
-        except Exception as e:
-            print(f"Local Storage Fallback Error: {e}")
-            return None
+        print("Supabase client not initialized. Cloud storage required.")
+        return None
     
     bucket_name = os.environ.get('SUPABASE_BUCKET_NAME', 'product-images')
     
