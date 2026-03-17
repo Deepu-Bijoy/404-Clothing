@@ -181,7 +181,7 @@ def search():
     elif sort == 'price_high':
         filter_query = filter_query.order_by(Product.price.desc())
     elif sort == 'rating':
-        filter_query = filter_query.outerjoin(Review).group_by(Product.id).order_by(db.func.avg(Review.rating).desc())
+        filter_query = filter_query.outerjoin(Review).group_by(Product.id, Category.name).order_by(db.func.avg(Review.rating).desc())
 
     products = filter_query.all()
     
